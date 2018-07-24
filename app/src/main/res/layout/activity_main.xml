@@ -16,16 +16,16 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#FFDDEDF8"
-        android:ems="10"
         android:ellipsize="start"
+        android:ems="10"
+        android:hint="  ID"
         android:inputType="text"
         android:textColorHint="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.547"
-        tools:hint="    ID" />
+        app:layout_constraintVertical_bias="0.423" />
 
     <Button
         android:id="@+id/Register"
@@ -44,7 +44,7 @@
         app:layout_constraintHorizontal_bias="0.829"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.801" />
+        app:layout_constraintVertical_bias="0.669" />
 
     <EditText
         android:id="@+id/TextPassword"
@@ -55,16 +55,16 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#FFDDEDF8"
-        android:ems="10"
-        android:inputType="textPassword"
         android:ellipsize="start"
+        android:ems="10"
+        android:hint="  Password"
+        android:inputType="textPassword"
         android:textColorHint="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.621"
-        tools:hint="   Password" />
+        app:layout_constraintVertical_bias="0.499" />
 
     <Button
         android:id="@+id/Sign_in"
@@ -80,14 +80,13 @@
         android:textColor="#ffffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.719" />
+        app:layout_constraintVertical_bias="0.588" />
 
     <Button
         android:id="@+id/Forgot"
-        android:layout_width="169dp"
+        android:layout_width="70dp"
         android:layout_height="43dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -97,14 +96,14 @@
         android:layout_marginTop="8dp"
         android:background="#00FF0000"
         android:onClick="onclick_Find"
-        android:text="Forgot ID / Password "
+        android:text="Find ID "
         android:textColor="#FF767679"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.251"
+        app:layout_constraintHorizontal_bias="0.174"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.801" />
+        app:layout_constraintVertical_bias="0.669" />
 
     <ImageView
         android:id="@+id/Logo"
@@ -120,7 +119,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.303"
+        app:layout_constraintVertical_bias="0.16"
         app:srcCompat="@drawable/teamlogo" />
 
     <CheckBox
@@ -138,9 +137,28 @@
         android:textSize="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.88" />
+        app:layout_constraintVertical_bias="0.897" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:layout_marginBottom="84dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="6dp"
+        android:background="#00ff0000"
+        android:text=" Find Password"
+        android:textColor="#FF767679"
+        app:layout_constraintBottom_toTopOf="@+id/Auto_login"
+        app:layout_constraintEnd_toStartOf="@+id/Register"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/Forgot"
+        app:layout_constraintTop_toBottomOf="@+id/Sign_in"
+        app:layout_constraintVertical_bias="0.857" />
 
 </android.support.constraint.ConstraintLayout>
