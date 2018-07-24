@@ -57,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
                 title = json_result.getString("status");
                 if (title.equals("OK")) {
                     //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
-                    Msg = "Login\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
+                    Msg = "Signed up now\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
                 } else {
                     Msg = "Msg : " + json_result.getString("Msg");
                 }

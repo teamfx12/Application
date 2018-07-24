@@ -60,8 +60,10 @@ public class MainActivity extends AppCompatActivity {
                 if (title.equals("OK")) {
                     //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
                     Msg = "Login\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
+                    Show_dialog(title,Msg);
                     Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
                     startActivity(location);
+                    return;
                 } else {
                     Msg = "Msg : " + json_result.getString("Msg");
                 }
