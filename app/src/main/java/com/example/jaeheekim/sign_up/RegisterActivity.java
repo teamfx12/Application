@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText ID;
@@ -47,9 +50,27 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            String Msg;
+            String title;
+            try {
+                JSONObject json_result = new JSONObject(s);
+                title = json_result.getString("status");
+                if (title.equals("OK")) {
+                    //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
+                    Msg = "Login\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
+                } else {
+                    Msg = "Msg : " + json_result.getString("Msg");
+                }
+            } catch (JSONException e) {
+                title = "Error";
+                Msg = "JSON parsing Error";
+            }
+            Show_dialog(title, Msg);
+        }
+        private void Show_dialog(String title, String Msg){
             AlertDialog.Builder ad = new AlertDialog.Builder(RegisterActivity.this);
-            ad.setTitle("Response from Server");
-            ad.setMessage(s);
+            ad.setTitle(title);
+            ad.setMessage(Msg);
             ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -86,7 +107,7 @@ public class RegisterActivity extends AppCompatActivity {
                         return;
                     }
                 }
-                String url = "http://192.168.33.99/user/signup";
+                String url = "http://teamf-iot.calit2.net/user/signup";
                 String values = null;
                 for(int i=0;i<5;i++) {
                     values = values + JSON_base[i];

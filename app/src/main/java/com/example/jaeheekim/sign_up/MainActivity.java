@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
 
     protected EditText Text_ID;
@@ -49,10 +52,29 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
+            String Msg;
+            String title;
+            try {
+                JSONObject json_result = new JSONObject(s);
+                title = json_result.getString("status");
+                if (title.equals("OK")) {
+                    //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
+                    Msg = "Login\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
+                    Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
+                    startActivity(location);
+                } else {
+                    Msg = "Msg : " + json_result.getString("Msg");
+                }
+            } catch (JSONException e) {
+                title = "Error";
+                Msg = "JSON parsing Error";
+            }
+            Show_dialog(title, Msg);
+        }
+        private void Show_dialog(String title, String Msg){
             AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-            ad.setTitle("Response from Server");
-            ad.setMessage(s);
+            ad.setTitle(title);
+            ad.setMessage(Msg);
             ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -88,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 if (id.length() == 0 || passwd.length() == 0) {
                     AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
                     ad.setTitle("Text Error");
-                    ad.setMessage("Please Enter");
+                    ad.setMessage("Please Enter your ID or Password");
                     ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -98,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     ad.show();
                     return;
                 }
-                String url = "http://192.168.33.99/user/login";
+                String url = "http://teamf-iot.calit2.net/user/login";
                 id = "account=" + id;
                 passwd = "passwd=" + passwd;
                 String values = id + "&" + passwd;
@@ -109,4 +131,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
