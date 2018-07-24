@@ -78,7 +78,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@color/colorPrimary"
-        android:onClick="onclick_Find_id"
+        android:onClick="onclick_Find_pw"
         android:text="find"
         android:textColor="#ffffff"
         android:textSize="18dp"

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Sign_up</string>
+    <string name="title_activity_current__location">Map</string>
 </resources>
