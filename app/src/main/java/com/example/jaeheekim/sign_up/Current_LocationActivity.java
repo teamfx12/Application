@@ -24,7 +24,6 @@ public class Current_LocationActivity extends FragmentActivity implements OnMapR
         mapFragment.getMapAsync(this);
     }
 
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -34,6 +33,7 @@ public class Current_LocationActivity extends FragmentActivity implements OnMapR
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

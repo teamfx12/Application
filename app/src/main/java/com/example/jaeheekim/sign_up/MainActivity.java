@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Text_ID = findViewById(R.id.TextID);
-        Text_ID = findViewById(R.id.TextPassword);
+        Text_Password = findViewById(R.id.TextPassword);
 
         // 위젯에 대한 참조.
         //tv_outPut = (TextView) findViewById(R.id.tv_outPut);
@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
                     //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
                     Msg = "Login\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
                     Show_dialog(title,Msg);
-                    Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
-                    startActivity(location);
+                    //Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
+                    //startActivity(location);
                     return;
                 } else {
                     Msg = "Msg : " + json_result.getString("Msg");
