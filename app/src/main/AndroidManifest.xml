@@ -26,7 +26,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".Find_IDActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -41,7 +40,10 @@
 
         <activity
             android:name=".Current_LocationActivity"
-            android:label="@string/title_activity_current__location"></activity>
+            android:label="@string/title_activity_current__location" />
+        <activity android:name=".Find_PasswordActivity" />
+        <activity android:name=".Delete_Account" />
+        <activity android:name=".Change_PasswordActivity"></activity>
     </application>
 
 </manifest>

@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <EditText
-        android:id="@+id/TextID"
+        android:id="@+id/TextEmail"
         android:layout_width="268dp"
         android:layout_height="38dp"
         android:layout_marginBottom="8dp"

@@ -2,7 +2,6 @@ package com.example.jaeheekim.sign_up;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,28 +11,23 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity {
+public class Find_PasswordActivity extends AppCompatActivity {
 
+    protected EditText Text_Fname;
     protected EditText Text_Email;
-    protected EditText Text_Password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Text_Email = findViewById(R.id.TextEmail);
-        Text_Password = findViewById(R.id.TextPassword);
+        setContentView(R.layout.activity_find__password);
 
-        // 위젯에 대한 참조.
-        //tv_outPut = (TextView) findViewById(R.id.tv_outPut);
-        // URL 설정.
-        //String url = "http://192.168.33.99/user/signup";
+        Text_Fname=findViewById(R.id.First_name);
+        Text_Email=findViewById(R.id.E_mail);
     }
 
     public class NetworkTask extends AsyncTask<Void, Void, String> {
 
         private String url;
-        //private ContentValues values;
         private String values;
 
         public NetworkTask(String url, String values) {
@@ -57,15 +51,15 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject json_result = new JSONObject(s);
                 title = json_result.getString("status");
-                if (title.equals("ok")) {
+                if (title.equals("OK")) {
                     //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
-                    Msg = "Login\nHello!";
+                    Msg = "We mailed your password";
                     Show_dialog(title,Msg);
                     //Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
                     //startActivity(location);
                     return;
                 } else {
-                    Msg = "msg : " + json_result.getString("msg");
+                    Msg = "Msg : " + json_result.getString("Msg");
                 }
             } catch (JSONException e) {
                 title = "Error";
@@ -74,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             Show_dialog(title, Msg);
         }
         private void Show_dialog(String title, String Msg){
-            AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+            AlertDialog.Builder ad = new AlertDialog.Builder(Find_PasswordActivity.this);
             ad.setTitle(title);
             ad.setMessage(Msg);
             ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -86,34 +80,19 @@ public class MainActivity extends AppCompatActivity {
             ad.show();
         }
     }
+    public void onclick_find(View view){
+        switch (view.getId()){
+            case R.id.Find: {
+                String function = "function=find-pw&";
+                String fname ="fname="+Text_Email+"&";
+                String email ="email="+Text_Email;
+                String url = "http://teamf-iot.calit2.net/user";
+                String values = function+fname+email;
 
-    public void onclick_register(View v) {
-        switch (v.getId()) {
-            case R.id.Register: {
-                Intent reg = new Intent(getApplicationContext(), RegisterActivity.class);
-                startActivity(reg);
-            }
-        }
-    }
-    public void onclick_Find(View v) {
-        switch (v.getId()) {
-            case R.id.Forgot: {
-                Intent find = new Intent(getApplicationContext(), Find_PasswordActivity.class);
-                startActivity(find);
-            }
-        }
-    }
-
-    public void onclick_login(View v) {
-        switch (v.getId()) {
-            case R.id.Sign_in: {
-                String email = this.Text_Email.getText().toString();
-                String pw = this.Text_Password.getText().toString();
-                String function;
-                if (email.length() == 0 || pw.length() == 0) {
-                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                if (email.length() == 0 || fname.length() == 0) {
+                    AlertDialog.Builder ad = new AlertDialog.Builder(Find_PasswordActivity.this);
                     ad.setTitle("Text Error");
-                    ad.setMessage("Please Enter your ID or Password");
+                    ad.setMessage("Please Enter your First name or Email");
                     ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -123,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
                     ad.show();
                     return;
                 }
-                String url = "http://teamf-iot.calit2.net/user";
-                function = "function=sign-in&";
-                email = "email=" + email;
-                pw = "pw=" + pw;
-                String values = function + email + "&" + pw;
-                //String values = "firstName=GEONUNG&lastName=CHO&email=fakem1333@gmail.com&passwd=apple";
                 NetworkTask networkTask = new NetworkTask(url, values);
                 networkTask.execute();
             }
