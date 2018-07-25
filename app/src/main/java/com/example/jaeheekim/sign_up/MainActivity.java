@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.Sign_in: {
                 String id = this.Text_ID.getText().toString();
                 String passwd = this.Text_Password.getText().toString();
+                String function;
                 if (id.length() == 0 || passwd.length() == 0) {
                     AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
                     ad.setTitle("Text Error");
@@ -123,9 +124,10 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 String url = "http://teamf-iot.calit2.net/user/login";
-                id = "account=" + id;
+                function = "funcition=login&";
+                id = "id=" + id;
                 passwd = "passwd=" + passwd;
-                String values = id + "&" + passwd;
+                String values = function + id + "&" + passwd;
                 //String values = "firstName=GEONUNG&lastName=CHO&email=fakem1333@gmail.com&passwd=apple";
                 NetworkTask networkTask = new NetworkTask(url, values);
                 networkTask.execute();
