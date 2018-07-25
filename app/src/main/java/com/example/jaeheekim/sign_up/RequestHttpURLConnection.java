@@ -17,17 +17,17 @@ public class RequestHttpURLConnection {
         try{
             URL url = new URL(_url);
             urlConn = (HttpURLConnection) url.openConnection();
+
             urlConn.setRequestMethod("POST");
             urlConn.setRequestProperty("Accept-Charset", "UTF-8");
             urlConn.setRequestProperty("Context_Type", "application/json");
-            urlConn.setConnectTimeout(1000);
+            urlConn.setConnectTimeout(5000);
             OutputStream os = urlConn.getOutputStream();
             os.write( body.getBytes("UTF-8") );
             os.flush();
             os.close();
             if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK)
                 return null;
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(urlConn.getInputStream(), "UTF-8"), urlConn.getContentLength() );
             String buf;
             buf = reader.readLine();

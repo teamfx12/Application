@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Text_ID = findViewById(R.id.TextID);
-        Text_ID = findViewById(R.id.TextPassword);
+        Text_Password = findViewById(R.id.TextPassword);
 
         // 위젯에 대한 참조.
         //tv_outPut = (TextView) findViewById(R.id.tv_outPut);
@@ -60,8 +60,10 @@ public class MainActivity extends AppCompatActivity {
                 if (title.equals("OK")) {
                     //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
                     Msg = "Login\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
-                    Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
-                    startActivity(location);
+                    Show_dialog(title,Msg);
+                    //Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
+                    //startActivity(location);
+                    return;
                 } else {
                     Msg = "Msg : " + json_result.getString("Msg");
                 }
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.Sign_in: {
                 String id = this.Text_ID.getText().toString();
                 String passwd = this.Text_Password.getText().toString();
+                String function;
                 if (id.length() == 0 || passwd.length() == 0) {
                     AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
                     ad.setTitle("Text Error");
@@ -121,9 +124,10 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 String url = "http://teamf-iot.calit2.net/user/login";
-                id = "account=" + id;
+                function = "funcition=login&";
+                id = "id=" + id;
                 passwd = "passwd=" + passwd;
-                String values = id + "&" + passwd;
+                String values = function + id + "&" + passwd;
                 //String values = "firstName=GEONUNG&lastName=CHO&email=fakem1333@gmail.com&passwd=apple";
                 NetworkTask networkTask = new NetworkTask(url, values);
                 networkTask.execute();

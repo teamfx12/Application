@@ -57,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
                 title = json_result.getString("status");
                 if (title.equals("OK")) {
                     //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
-                    Msg = "Login\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
+                    Msg = "Signed up now\nHello!" + json_result.getString("fname") + " " + json_result.getString("lname");
                 } else {
                     Msg = "Msg : " + json_result.getString("Msg");
                 }
@@ -83,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void onclick_register(View v) {
         switch (v.getId()) {
             case R.id.Done: {
-                String JSON_base[] = {"ID=", "firstName=", "lastName=","email=","passwd="};
+                String JSON_base[] = {"id=", "firstName=", "lastName=","email=","passwd="};
                 String input_str[] = new String[5];
                 //[0] : fname // [1] : lname // [2] : id // [3] : passwd
                 input_str[0] = this.ID.getText().toString();
