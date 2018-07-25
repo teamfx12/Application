@@ -30,21 +30,23 @@
     <Button
         android:id="@+id/Register"
         android:layout_width="74dp"
-        android:layout_height="43dp"
+        android:layout_height="35dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#00ff0000"
         android:onClick="onclick_register"
-        android:text="Register"
+        android:text="  Register"
         android:textColor="#FF767679"
+        android:textSize="13dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.829"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.669" />
+        app:layout_constraintVertical_bias="0.658" />
 
     <EditText
         android:id="@+id/TextPassword"
@@ -86,8 +88,8 @@
 
     <Button
         android:id="@+id/Forgot"
-        android:layout_width="70dp"
-        android:layout_height="43dp"
+        android:layout_width="52dp"
+        android:layout_height="35dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
@@ -95,20 +97,21 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#00FF0000"
-        android:onClick="onclick_Find"
+        android:onClick="onclick_Find_ID"
         android:text="Find ID "
         android:textColor="#FF767679"
+        android:textSize="13dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.174"
+        app:layout_constraintHorizontal_bias="0.16"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.669" />
+        app:layout_constraintVertical_bias="0.658" />
 
     <ImageView
         android:id="@+id/Logo"
-        android:layout_width="200dp"
-        android:layout_height="160dp"
+        android:layout_width="181dp"
+        android:layout_height="147dp"
         android:layout_marginBottom="43dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
@@ -144,21 +147,23 @@
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
-        android:layout_height="43dp"
-        android:layout_marginBottom="84dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="6dp"
+        android:layout_height="35dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="#00ff0000"
-        android:text=" Find Password"
+        android:onClick="onclick_Find_Password"
+        android:text="Find Password"
         android:textColor="#FF767679"
-        app:layout_constraintBottom_toTopOf="@+id/Auto_login"
-        app:layout_constraintEnd_toStartOf="@+id/Register"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/Forgot"
-        app:layout_constraintTop_toBottomOf="@+id/Sign_in"
-        app:layout_constraintVertical_bias="0.857" />
+        android:textSize="13dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.658" />
 
 </android.support.constraint.ConstraintLayout>
