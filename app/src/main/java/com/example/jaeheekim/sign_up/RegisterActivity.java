@@ -107,7 +107,7 @@ public class RegisterActivity extends AppCompatActivity {
                         return;
                     }
                 }
-                String url = "http://teamf-iot.calit2.net/user/signup";
+                String url = "http://teamf-iot.calit2.net/user";
                 String values = null;
                 for(int i=0;i<5;i++) {
                     values = values + JSON_base[i];

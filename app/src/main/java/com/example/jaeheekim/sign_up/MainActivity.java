@@ -123,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
                     ad.show();
                     return;
                 }
-                String url = "http://teamf-iot.calit2.net/user/login";
-                function = "funcition=login&";
+                String url = "http://teamf-iot.calit2.net/user";
+                function = "function=login&";
                 id = "id=" + id;
                 passwd = "passwd=" + passwd;
                 String values = function + id + "&" + passwd;

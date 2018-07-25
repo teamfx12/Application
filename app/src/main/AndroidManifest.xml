@@ -42,7 +42,9 @@
 
         <activity
             android:name=".Current_LocationActivity"
-            android:label="@string/title_activity_current__location"></activity>
+            android:label="@string/title_activity_current__location" />
+        <activity android:name=".activity_find_password" />
+        <activity android:name=".activity_change_password"></activity>
     </application>
 
 </manifest>
