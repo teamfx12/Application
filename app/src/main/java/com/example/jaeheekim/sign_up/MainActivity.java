@@ -61,11 +61,11 @@ public class MainActivity extends AppCompatActivity {
                     //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
                     Msg = "Login\nHello!";
                     Show_dialog(title,Msg);
-                    //Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
-                    //startActivity(location);
+                    Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
+                    startActivity(location);
                     return;
                 } else {
-                    Msg = "msg : " + json_result.getString("msg");
+                    Msg = "Message : " + json_result.getString("msg");
                 }
             } catch (JSONException e) {
                 title = "Error";
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 String url = "http://teamf-iot.calit2.net/user";
                 function = "function=sign-in&";
                 email = "email=" + email;
-                pw = "pw=" + pw;
+                pw = "passwd=" + pw;
                 String values = function + email + "&" + pw;
                 //String values = "firstName=GEONUNG&lastName=CHO&email=fakem1333@gmail.com&passwd=apple";
                 NetworkTask networkTask = new NetworkTask(url, values);
