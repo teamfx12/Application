@@ -2,6 +2,7 @@ package com.example.jaeheekim.sign_up;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,12 +26,12 @@ public class Find_PasswordActivity extends AppCompatActivity {
         Text_Email=findViewById(R.id.E_mail);
     }
 
-    public class NetworkTask extends AsyncTask<Void, Void, String> {
+    public class NetworkTask_find extends AsyncTask<Void, Void, String> {
 
         private String url;
         private String values;
 
-        public NetworkTask(String url, String values) {
+        public NetworkTask_find(String url, String values) {
             this.url = url;
             this.values = values;
         }
@@ -51,20 +52,20 @@ public class Find_PasswordActivity extends AppCompatActivity {
             try {
                 JSONObject json_result = new JSONObject(s);
                 title = json_result.getString("status");
-                if (title.equals("OK")) {
+                if (title.equals("ok")) {
                     //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
                     Msg = "We mailed your password";
                     Show_dialog(title,Msg);
-                    //Intent location = new Intent(getApplicationContext(), Current_LocationActivity.class);
-                    //startActivity(location);
+                    Intent intent_main = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent_main);
                     return;
                 } else {
-                    Msg = "Msg : " + json_result.getString("Msg");
+                    Msg = "Msg : " + json_result.getString("msg");
                 }
             } catch (JSONException e) {
                 title = "Error";
                 Msg = "JSON parsing Error";
-            }
+        }
             Show_dialog(title, Msg);
         }
         private void Show_dialog(String title, String Msg){
@@ -84,8 +85,9 @@ public class Find_PasswordActivity extends AppCompatActivity {
         switch (view.getId()){
             case R.id.Find: {
                 String function = "function=find-pw&";
-                String fname ="fname="+Text_Email+"&";
-                String email ="email="+Text_Email;
+
+                String fname ="fname="+this.Text_Fname.getText().toString()+"&";
+                String email ="email="+this.Text_Email.getText().toString();
                 String url = "http://teamf-iot.calit2.net/user";
                 String values = function+fname+email;
 
@@ -102,7 +104,7 @@ public class Find_PasswordActivity extends AppCompatActivity {
                     ad.show();
                     return;
                 }
-                NetworkTask networkTask = new NetworkTask(url, values);
+                NetworkTask_find networkTask = new NetworkTask_find(url, values);
                 networkTask.execute();
             }
         }

@@ -20,7 +20,10 @@ public class RequestHttpURLConnection {
             urlConn.setRequestMethod("POST");
             urlConn.setRequestProperty("Accept-Charset", "UTF-8");
             urlConn.setRequestProperty("Context_Type", "application/json");
-            urlConn.setConnectTimeout(1000);
+            urlConn.setConnectTimeout(15000);
+            urlConn.setReadTimeout(10000);
+            urlConn.setDoInput(true);
+            urlConn.setDoOutput(true);
             OutputStream os = urlConn.getOutputStream();
             os.write( body.getBytes("UTF-8") );
             os.flush();
@@ -38,8 +41,8 @@ public class RequestHttpURLConnection {
             e.printStackTrace();
             return "ERROR";
         } finally {
-            if (urlConn != null);
-            urlConn.disconnect();
+            if (urlConn != null)
+                urlConn.disconnect();
         }
         return null;
     }

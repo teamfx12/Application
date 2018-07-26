@@ -1,12 +1,16 @@
 package com.example.jaeheekim.sign_up;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import org.json.JSONException;
@@ -16,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
 
     protected EditText Text_Email;
     protected EditText Text_Password;
+    protected Button Sign_in;
+    protected InputMethodManager imm;
+    protected ConstraintLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,11 +30,35 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Text_Email = findViewById(R.id.TextEmail);
         Text_Password = findViewById(R.id.TextPassword);
+        layout = (ConstraintLayout)findViewById(R.id.layout);
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        Sign_in = (Button)findViewById(R.id.Sign_in);
 
+        layout.setOnClickListener(myClickListener);
+        Sign_in.setOnClickListener(myClickListener);
         // 위젯에 대한 참조.
         //tv_outPut = (TextView) findViewById(R.id.tv_outPut);
         // URL 설정.
         //String url = "http://192.168.33.99/user/signup";
+    }
+
+    View.OnClickListener myClickListener = new View.OnClickListener(){
+
+        @Override
+        public void onClick(View view) {
+            hideKeyBoard();
+            switch (view.getId()){
+                case R.id.layout :
+                    break;
+                case R.id.Sign_in:
+                    break;
+            }
+        }
+    };
+
+    private void hideKeyBoard(){
+        imm.hideSoftInputFromWindow(Text_Email.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(Text_Password.getWindowToken(),0);
     }
 
     public class NetworkTask extends AsyncTask<Void, Void, String> {
@@ -95,9 +126,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    public void onclick_Find(View v) {
+    public void onclick_find(View v) {
         switch (v.getId()) {
-            case R.id.Forgot: {
+            case R.id.Find: {
                 Intent find = new Intent(getApplicationContext(), Find_PasswordActivity.class);
                 startActivity(find);
             }

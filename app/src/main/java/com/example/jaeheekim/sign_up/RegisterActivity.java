@@ -2,6 +2,7 @@ package com.example.jaeheekim.sign_up;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,12 +30,12 @@ public class RegisterActivity extends AppCompatActivity {
         Password = findViewById(R.id.Password);
     }
 
-    public class NetworkTask extends AsyncTask<Void, Void, String> {
+    public class NetworkTask_regi extends AsyncTask<Void, Void, String> {
 
         private String url;
         private String values;
 
-        public NetworkTask(String url, String values) {
+        public NetworkTask_regi(String url, String values) {
             this.url = url;
             this.values = values;
         }
@@ -57,6 +58,8 @@ public class RegisterActivity extends AppCompatActivity {
                 title = json_result.getString("status");
                 if (title.equals("ok")) {
                     Msg = "Signed up now\nHello!";
+                    Intent intent_to_main = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent_to_main);
                 } else {
                     Msg = "msg : " + json_result.getString("msg");
                 }
@@ -84,7 +87,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void onclick_register(View v) {
         switch (v.getId()) {
             case R.id.Done: {
-                String JSON_base[] = {"fname=", "lname=","email=","pw="};
+                String JSON_base[] = {"fname=", "lname=","email=","passwd="};
                 String input_str[] = new String[4];
                 //[0] : fname // [1] : lname // [2] : id // [3] : passwd
                 input_str[0] = this.First_name.getText().toString();
@@ -108,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
                 String url = "http://teamf-iot.calit2.net/user";
-                String values = null;
+                String values = "function=sign-up&";
                 for(int i=0;i<4;i++) {
                     values = values + JSON_base[i];
                     values = values + input_str[i];
@@ -117,8 +120,8 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
                 if(email_checked == true) {
-                    RegisterActivity.NetworkTask networkTask = new RegisterActivity.NetworkTask(url, values);
-                    networkTask.execute();
+                    NetworkTask_regi networkTask_regi = new NetworkTask_regi(url, values);
+                    networkTask_regi.execute();
                 }
                 else{
                     Show_dialog("Error","You need to check your email first");
@@ -159,7 +162,7 @@ public class RegisterActivity extends AppCompatActivity {
                     //이후 다른 사용가능한 이메일을 입력하지 않았을때
                 }
                 else {
-                    Msg = "msg : " + json_result.getString("msg");
+                    Msg = "Message : It exist already";
                 }
             } catch (JSONException e) {
                 title = "Error";
@@ -172,7 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void onclick_check(View view){
         switch (view.getId()) {
             case R.id.Check: {
-                String email = "email=" + E_mail;
+                String email = "email=" + this.E_mail.getText().toString();
                 String function = "function=mail-check&";
 
                 String url = "http://teamf-iot.calit2.net/user";
