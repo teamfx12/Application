@@ -104,6 +104,7 @@ public class Find_PasswordActivity extends AppCompatActivity {
                     ad.show();
                     return;
                 }
+
                 NetworkTask_find networkTask = new NetworkTask_find(url, values);
                 networkTask.execute();
             }

@@ -26,37 +26,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="191dp"
-        android:layout_marginStart="191dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:text="Register"
-        android:textSize="35dp"
+        android:textColor="#FF767679"
+        android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.204"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.126" />
+        app:layout_constraintVertical_bias="0.112"/>
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="311dp"
-        android:layout_height="391dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="298dp"
+        android:layout_height="384dp"
+        android:layout_marginBottom="456dp"
+        android:layout_marginEnd="267dp"
+        android:layout_marginLeft="267dp"
+        android:layout_marginRight="267dp"
+        android:layout_marginStart="267dp"
+        android:layout_marginTop="111dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.508"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.708"
-        app:srcCompat="@color/common_google_signin_btn_text_dark_default" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@color/common_google_signin_btn_text_dark_pressed" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout"
         android:layout_width="292dp"
-        android:layout_height="386dp"
+        android:layout_height="405dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -64,9 +70,10 @@
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.716">
+        app:layout_constraintVertical_bias="0.333">
 
         <EditText
             android:id="@+id/E_mail"
@@ -104,7 +111,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.178" />
+            app:layout_constraintVertical_bias="0.199" />
 
         <EditText
             android:id="@+id/First_name"
@@ -124,7 +131,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.288" />
+            app:layout_constraintVertical_bias="0.344" />
 
         <EditText
             android:id="@+id/Last_name"
@@ -142,7 +149,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.29000002" />
+            app:layout_constraintVertical_bias="0.344" />
 
         <EditText
             android:id="@+id/Password"
@@ -159,7 +166,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.469" />
+            app:layout_constraintVertical_bias="0.498" />
 
         <CheckBox
             android:id="@+id/checkBox"
@@ -175,7 +182,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.713" />
+            app:layout_constraintVertical_bias="0.647" />
 
         <Button
             android:id="@+id/Done"
@@ -194,10 +201,9 @@
             android:textSize="18dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.91" />
+            app:layout_constraintVertical_bias="0.843" />
 
     </android.support.constraint.ConstraintLayout>
 

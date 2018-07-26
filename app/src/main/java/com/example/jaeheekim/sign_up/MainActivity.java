@@ -20,9 +20,9 @@ public class MainActivity extends AppCompatActivity {
 
     protected EditText Text_Email;
     protected EditText Text_Password;
-    protected Button Sign_in;
-    protected InputMethodManager imm;
-    protected ConstraintLayout layout;
+    //protected Button Sign_in;
+    //protected InputMethodManager imm;
+    //protected ConstraintLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,19 +30,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Text_Email = findViewById(R.id.TextEmail);
         Text_Password = findViewById(R.id.TextPassword);
-        layout = (ConstraintLayout)findViewById(R.id.layout);
-        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        Sign_in = (Button)findViewById(R.id.Sign_in);
+        //layout = (ConstraintLayout)findViewById(R.id.layout);
+        //imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        //Sign_in = (Button)findViewById(R.id.Sign_in);
 
-        layout.setOnClickListener(myClickListener);
-        Sign_in.setOnClickListener(myClickListener);
+        //layout.setOnClickListener(myClickListener);
+        //Sign_in.setOnClickListener(myClickListener);
         // 위젯에 대한 참조.
         //tv_outPut = (TextView) findViewById(R.id.tv_outPut);
         // URL 설정.
         //String url = "http://192.168.33.99/user/signup";
     }
 
-    View.OnClickListener myClickListener = new View.OnClickListener(){
+    /*View.OnClickListener myClickListener = new View.OnClickListener(){
 
         @Override
         public void onClick(View view) {
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private void hideKeyBoard(){
         imm.hideSoftInputFromWindow(Text_Email.getWindowToken(),0);
         imm.hideSoftInputFromWindow(Text_Password.getWindowToken(),0);
-    }
+    }*/
 
     public class NetworkTask extends AsyncTask<Void, Void, String> {
 
@@ -159,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
                 email = "email=" + email;
                 pw = "passwd=" + pw;
                 String values = function + email + "&" + pw;
-                //String values = "firstName=GEONUNG&lastName=CHO&email=fakem1333@gmail.com&passwd=apple";
                 NetworkTask networkTask = new NetworkTask(url, values);
                 networkTask.execute();
             }

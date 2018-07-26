@@ -1,12 +1,16 @@
 package com.example.jaeheekim.sign_up;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import org.json.JSONException;
@@ -19,6 +23,10 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText E_mail;
     private EditText Password;
     private Boolean email_checked=false;
+    //private ConstraintLayout layout;
+    //protected Button Check;
+    //protected Button Done;
+    //protected InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +36,37 @@ public class RegisterActivity extends AppCompatActivity {
         Last_name = findViewById(R.id.Last_name);
         E_mail = findViewById(R.id.E_mail);
         Password = findViewById(R.id.Password);
+        //layout = (ConstraintLayout) findViewById(R.id.layout);
+        //Check = (Button) findViewById(R.id.Check);
+        //Done = (Button) findViewById(R.id.Done);
+        //imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        //layout.setOnClickListener(myClickListener);
+        //Check.setOnClickListener(myClickListener);
+        //Done.setOnClickListener(myClickListener);
     }
+    /*View.OnClickListener myClickListener = new View.OnClickListener(){
+
+        @Override
+        public void onClick(View view) {
+            hideKeyBoard();
+            switch (view.getId()){
+                case R.id.layout :
+                    break;
+                case R.id.Check:
+                    break;
+                case R.id.Done:
+                    break;
+            }
+        }
+    };
+
+    private void hideKeyBoard(){
+        imm.hideSoftInputFromWindow(First_name.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(Last_name.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(E_mail.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(Password.getWindowToken(),0);
+    }*/
 
     public class NetworkTask_regi extends AsyncTask<Void, Void, String> {
 
