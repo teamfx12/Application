@@ -12,7 +12,7 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Change_PasswordActivity extends AppCompatActivity {
+public class ChangePasswordActivity extends AppCompatActivity {
 
     protected EditText currentPW;
     protected EditText newPW;
@@ -21,7 +21,7 @@ public class Change_PasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change__password);         // content connection with activity_log_in
+        setContentView(R.layout.activity_change_password);         // content connection with activity_log_in
         currentPW = findViewById(R.id.currentPW);                   // get User input
         newPW = findViewById(R.id.newPW);
         conformNewPW = findViewById(R.id.conformNewPW);
@@ -41,7 +41,7 @@ public class Change_PasswordActivity extends AppCompatActivity {
                 // pw are not entered
                 for(int i = 2 ;i < input_str.length; i++) {
                     if(input_str[i].length() == 0) {
-                        AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
+                        AlertDialog.Builder ad = new AlertDialog.Builder(ChangePasswordActivity.this);
                         ad.setTitle("Text Error");
                         ad.setMessage("Please Enter your " + JSON_base[i]);
                         ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -56,7 +56,7 @@ public class Change_PasswordActivity extends AppCompatActivity {
                 }
                 // new password and conform password are not matched
                 if (!input_str[3].equals(this.conformNewPW.getText().toString())){
-                    AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
+                    AlertDialog.Builder ad = new AlertDialog.Builder(ChangePasswordActivity.this);
                     ad.setTitle("PassWord conform Error");
                     ad.setMessage("your new two password are not same");
                     ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -70,7 +70,7 @@ public class Change_PasswordActivity extends AppCompatActivity {
                 }
                 // new password is same with current password
                 else if (input_str[2].equals(input_str[3])){
-                    AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
+                    AlertDialog.Builder ad = new AlertDialog.Builder(ChangePasswordActivity.this);
                     ad.setTitle("PassWord change Error");
                     ad.setMessage("Please make your new and current password different");
                     ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -141,7 +141,7 @@ public class Change_PasswordActivity extends AppCompatActivity {
             showDialog("Error", msg);
         }
         private void showDialog(final String title, String Msg){
-            AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
+            AlertDialog.Builder ad = new AlertDialog.Builder(ChangePasswordActivity.this);
             ad.setTitle(title);
             ad.setMessage(Msg);
             ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -149,11 +149,11 @@ public class Change_PasswordActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     if(title.equals("ok")) {
-                        Intent to_main = new Intent(getApplicationContext(), UserMainActivity.class);
+                        Intent to_main = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(to_main);
                     }
                     else if(title.equals("token_expired")) {
-                        Intent to_login = new Intent(getApplicationContext(), Log_inActivity.class);
+                        Intent to_login = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(to_login);
                     }
                 }

@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Log_inActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,13 +40,15 @@
             android:value="AIzaSyDi8oRfuqAgIK0iJehg37la3LP6Ge1hsoI" />
 
         <activity
-            android:name=".Current_LocationActivity"
+            android:name=".CurrentLocationActivity"
             android:label="@string/title_activity_current__location" />
-        <activity android:name=".Find_PasswordActivity" />
-        <activity android:name=".Delete_Account" />
-        <activity android:name=".Change_PasswordActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".FindPasswordActivity" />
+        <activity android:name=".DeleteAccountActivity" />
+        <activity android:name=".ChangePasswordActivity" />
         <activity android:name=".temActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"></activity>
     </application>
 
 </manifest>

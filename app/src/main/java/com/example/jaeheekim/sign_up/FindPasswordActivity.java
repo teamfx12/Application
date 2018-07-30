@@ -12,7 +12,7 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Find_PasswordActivity extends AppCompatActivity {
+public class FindPasswordActivity extends AppCompatActivity {
 
     protected EditText textFname;
     protected EditText textEmail;
@@ -20,7 +20,7 @@ public class Find_PasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_find__password);                // content connection with activity_register
+        setContentView(R.layout.activity_find_password);                // content connection with activity_register
         textFname=findViewById(R.id.firstName);                          // get user input
         textEmail=findViewById(R.id.email);
     }
@@ -39,7 +39,7 @@ public class Find_PasswordActivity extends AppCompatActivity {
                 // email or pw is not entered
                 for(int i = 1 ;i < input_str.length; i++) {
                     if(input_str[i].length() == 0) {
-                        AlertDialog.Builder ad = new AlertDialog.Builder(Find_PasswordActivity.this);
+                        AlertDialog.Builder ad = new AlertDialog.Builder(FindPasswordActivity.this);
                         ad.setTitle("Text Error");
                         ad.setMessage("Please Enter your " + JSON_base[i]);
                         ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -110,7 +110,7 @@ public class Find_PasswordActivity extends AppCompatActivity {
             showDialog("Error", msg);
         }
         private void showDialog(final String title, String Msg){
-            AlertDialog.Builder ad = new AlertDialog.Builder(Find_PasswordActivity.this);
+            AlertDialog.Builder ad = new AlertDialog.Builder(FindPasswordActivity.this);
             ad.setTitle(title);
             ad.setMessage(Msg);
             ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -119,7 +119,7 @@ public class Find_PasswordActivity extends AppCompatActivity {
                     dialog.dismiss();
                     // if temp password is sent, go login screen
                     if(title.equals("ok")) {
-                        Intent toMain = new Intent(getApplicationContext(), Log_inActivity.class);
+                        Intent toMain = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(toMain);
                     }
                 }

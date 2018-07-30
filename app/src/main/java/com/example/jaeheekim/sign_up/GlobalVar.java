@@ -64,13 +64,22 @@ public class GlobalVar extends Application{
     public static void setTokenExpire(Date tokenExpire) { GlobalVar.tokenExpire = tokenExpire; }
 
     @TargetApi(Build.VERSION_CODES.N)
-    public static  boolean isTokenExpired(Date tokenExpire) throws ParseException {
+    public static  boolean isTokenExpired() throws ParseException {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         currentDate = format.parse(format.format(calendar.getTime()));
-        if(currentDate.before(tokenExpire))
+        if(currentDate.before(GlobalVar.tokenExpire))
             return true;
         else
             return false;
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    public static void makeTokenExpired() throws ParseException {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        currentDate = format.parse(format.format(calendar.getTime()));
+        GlobalVar.tokenExpire = currentDate;
+        GlobalVar.token = "";
     }
 }

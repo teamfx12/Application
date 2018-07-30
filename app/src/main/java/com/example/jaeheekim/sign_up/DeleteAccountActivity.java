@@ -12,24 +12,23 @@ import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Delete_Account extends AppCompatActivity {
+public class DeleteAccountActivity extends AppCompatActivity {
 
     protected EditText Text_Password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_delete__account);
-
+        setContentView(R.layout.activity_delete_account);
         Text_Password = findViewById(R.id.Password);
     }
 
-    public class NetworkTask_delete extends AsyncTask<Void, Void, String> {
+    public class NetworkTaskDelete extends AsyncTask<Void, Void, String> {
 
         private String url;
         private String values;
 
-        public NetworkTask_delete(String url, String values) {
+        public NetworkTaskDelete(String url, String values) {
             this.url = url;
             this.values = values;
         }
@@ -51,10 +50,8 @@ public class Delete_Account extends AppCompatActivity {
                 JSONObject json_result = new JSONObject(s);
                 title = json_result.getString("status");
                 if (title.equals("ok")) {
-                    Msg = "We mailed your password";
-                    Show_dialog(title, Msg);
-                    Intent intent_main = new Intent(getApplicationContext(), Log_inActivity.class);
-                    startActivity(intent_main);
+                    Msg = "Thank you for using our Application";
+                    ShowDialog(title, Msg);
                     return;
                 } else {
                     Msg = "Msg : " + json_result.getString("msg");
@@ -63,16 +60,20 @@ public class Delete_Account extends AppCompatActivity {
                 title = "Error";
                 Msg = "JSON parsing Error";
             }
-            Show_dialog(title, Msg);
+            ShowDialog(title, Msg);
         }
-        private void Show_dialog(String title, String Msg){
-            AlertDialog.Builder ad = new AlertDialog.Builder(Delete_Account.this);
+        private void ShowDialog(final String title, String Msg){
+            AlertDialog.Builder ad = new AlertDialog.Builder(DeleteAccountActivity.this);
             ad.setTitle(title);
             ad.setMessage(Msg);
             ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    if(title == "ok") {
+                        Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(toLogin);
+                    }
                 }
             });
             ad.show();
@@ -82,14 +83,14 @@ public class Delete_Account extends AppCompatActivity {
     public void onClickDelete(View view){
         switch (view.getId()){
             case R.id.btnDelete: {
-                String function = "function=delete-pw&";
+                String function = "function=delet-account&";
                 String pw ="pw="+this.Text_Password.getText().toString();
-                String token = GlobalVar.getToken();
+                String token = "token="+GlobalVar.getToken();
                 String url = "http://teamf-iot.calit2.net/user";
                 String values = function+pw+"&"+token;
 
                 if (pw.length() == 0) {
-                    AlertDialog.Builder ad = new AlertDialog.Builder(Delete_Account.this);
+                    AlertDialog.Builder ad = new AlertDialog.Builder(DeleteAccountActivity.this);
                     ad.setTitle("Text Error");
                     ad.setMessage("Please Enter your Password");
                     ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -102,7 +103,7 @@ public class Delete_Account extends AppCompatActivity {
                     return;
                 }
 
-                AlertDialog.Builder check = new AlertDialog.Builder(Delete_Account.this);
+                AlertDialog.Builder check = new AlertDialog.Builder(DeleteAccountActivity.this);
                 check.setTitle("Check");
                 check.setMessage("Are you sure to delete??");
                 check.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -113,8 +114,8 @@ public class Delete_Account extends AppCompatActivity {
                 });
                 check.show();
 
-                NetworkTask_delete networkTask_delete = new NetworkTask_delete(url, values);
-                networkTask_delete.execute();
+                NetworkTaskDelete networkTaskDelete = new NetworkTaskDelete(url, values);
+                networkTaskDelete.execute();
             }
         }
     }

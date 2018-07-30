@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-public class Log_inActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     protected EditText textEmail;
     protected EditText textPassword;
@@ -73,7 +73,7 @@ public class Log_inActivity extends AppCompatActivity {
                 // email or pw is not entered
                 for(int i = 1 ;i < input_str.length; i++) {
                     if(input_str[i].length() == 0) {
-                        AlertDialog.Builder ad = new AlertDialog.Builder(Log_inActivity.this);
+                        AlertDialog.Builder ad = new AlertDialog.Builder(LoginActivity.this);
                         ad.setTitle("Text Error");
                         ad.setMessage("Please Enter your " + JSON_base[i]);
                         ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -157,7 +157,7 @@ public class Log_inActivity extends AppCompatActivity {
 
         // use own showDialog to check isTemp.
         private void showDialog(final String title, String msg, final int isTemp){
-            final AlertDialog.Builder ad = new AlertDialog.Builder(Log_inActivity.this);
+            final AlertDialog.Builder ad = new AlertDialog.Builder(LoginActivity.this);
             ad.setTitle(title);     // set title and msg
             ad.setMessage(msg);
             // if user touch "yes" bottom
@@ -167,12 +167,12 @@ public class Log_inActivity extends AppCompatActivity {
                     dialog.dismiss();   // first dialog dismiss
                     // if user login with temp password let user change the password
                     if(title.equals("ok") && isTemp == 1){
-                        Intent change_pw = new Intent(getApplicationContext(), Change_PasswordActivity.class);
+                        Intent change_pw = new Intent(getApplicationContext(), ChangePasswordActivity.class);
                         startActivity(change_pw);
                     }
                     // user login successfully. go to MainActivity
                     else if(title.equals("ok")) {
-                        Intent location = new Intent(getApplicationContext(), UserMainActivity.class);
+                        Intent location = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(location);
                     }
                 }
@@ -193,7 +193,7 @@ public class Log_inActivity extends AppCompatActivity {
     public void onClickFind(View v) {
         switch (v.getId()) {
             case R.id.btnFindPassword: {
-                Intent find = new Intent(getApplicationContext(), Find_PasswordActivity.class);
+                Intent find = new Intent(getApplicationContext(), FindPasswordActivity.class);
                 startActivity(find);
             }
         }

@@ -248,7 +248,7 @@ public class RegisterActivity extends AppCompatActivity {
                     dialog.dismiss();
                     // if user submit their information well, let user be able to login
                     if(title.equals("ok")) {
-                        Intent toLogin = new Intent(getApplicationContext(), Log_inActivity.class);
+                        Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(toLogin);
                     }
                 }
