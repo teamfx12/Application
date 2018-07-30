@@ -14,61 +14,102 @@ import org.json.JSONObject;
 
 public class Find_PasswordActivity extends AppCompatActivity {
 
-    protected EditText Text_Fname;
-    protected EditText Text_Email;
+    protected EditText textFname;
+    protected EditText textEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_find__password);
-
-        Text_Fname=findViewById(R.id.First_name);
-        Text_Email=findViewById(R.id.E_mail);
+        setContentView(R.layout.activity_find__password);                // content connection with activity_register
+        textFname=findViewById(R.id.firstName);                          // get user input
+        textEmail=findViewById(R.id.email);
     }
 
-    public class NetworkTask_find extends AsyncTask<Void, Void, String> {
+    // when user touch Find bottom
+    public void onClickFind(View view){
+        switch (view.getId()){
+            case R.id.btnFindPassword: {
+                // get data sent form user
+                String JSON_base[] = {"function", "fname", "email"};
+                String input_str[] = new String[3];
+                // [0] : function // [1] : fname // [2] : email
+                input_str[0] = "find-pw";
+                input_str[1] = this.textFname.getText().toString();
+                input_str[2] = this.textEmail.getText().toString();
+                // email or pw is not entered
+                for(int i = 1 ;i < input_str.length; i++) {
+                    if(input_str[i].length() == 0) {
+                        AlertDialog.Builder ad = new AlertDialog.Builder(Find_PasswordActivity.this);
+                        ad.setTitle("Text Error");
+                        ad.setMessage("Please Enter your " + JSON_base[i]);
+                        ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        ad.show();
+                        return;
+                    }
+                }
+                String url = "http://teamf-iot.calit2.net/user";
+                String values = "";
+                // make data to JSON format
+                for(int i=0;i<input_str.length;i++) {
+                    values = values + JSON_base[i] + "=";
+                    values = values + input_str[i];
+                    if(i!=input_str.length-1) {
+                        values = values + "&";
+                    }
+                }
+                // call Method to communicate with server
+                NetworkTaskFind networkTaskFind = new NetworkTaskFind(url, values);
+                networkTaskFind.execute();
+            }
+        }
+    }
 
-        private String url;
-        private String values;
+    // to communication with Server to check ID duplication
+    public class NetworkTaskFind extends AsyncTask<Void, Void, String> {
 
-        public NetworkTask_find(String url, String values) {
+        private String url;                         // Server URL
+        private String values;                      // data passing to Server from Android
+        // constructor
+        public NetworkTaskFind(String url, String values) {
             this.url = url;
             this.values = values;
         }
-
+        // start from here
         @Override
         protected String doInBackground(Void... params) {
-            String result; // 요청 결과를 저장할 변수.
+            String result;       // Variable to store value from Server "url"
             RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
-            result = requestHttpURLConnection.request(url, values); // 해당 URL로 부터 결과물을 얻어온다.
+            result = requestHttpURLConnection.request(url, values); // get result from this "url"
             return result;
         }
-
+        // start after done doInBackground, result will be s in this function
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            String Msg;
-            String title;
+            String msg;                         // msg to show to the user
+            String title;                       // title of Msg
             try {
-                JSONObject json_result = new JSONObject(s);
-                title = json_result.getString("status");
+                JSONObject json_result = new JSONObject(s);             // make JSONObject to store data from the Server
+                title = json_result.getString("status");                // title will be value of s's "status"
+                // if user entered right email and first name
                 if (title.equals("ok")) {
-                    //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
-                    Msg = "We mailed your password";
-                    Show_dialog(title,Msg);
-                    Intent intent_main = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent_main);
+                    msg = "We mailed your password";
+                    showDialog(title,msg);
                     return;
                 } else {
-                    Msg = "Msg : " + json_result.getString("msg");
+                    msg = "Msg : " + json_result.getString("msg");
                 }
             } catch (JSONException e) {
-                title = "Error";
-                Msg = "JSON parsing Error";
+                msg = "JSON parsing Error";
         }
-            Show_dialog(title, Msg);
+            showDialog("Error", msg);
         }
-        private void Show_dialog(String title, String Msg){
+        private void showDialog(final String title, String Msg){
             AlertDialog.Builder ad = new AlertDialog.Builder(Find_PasswordActivity.this);
             ad.setTitle(title);
             ad.setMessage(Msg);
@@ -76,38 +117,14 @@ public class Find_PasswordActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    // if temp password is sent, go login screen
+                    if(title.equals("ok")) {
+                        Intent toMain = new Intent(getApplicationContext(), Log_inActivity.class);
+                        startActivity(toMain);
+                    }
                 }
             });
             ad.show();
-        }
-    }
-    public void onclick_find(View view){
-        switch (view.getId()){
-            case R.id.Find: {
-                String function = "function=find-pw&";
-
-                String fname ="fname="+this.Text_Fname.getText().toString()+"&";
-                String email ="email="+this.Text_Email.getText().toString();
-                String url = "http://teamf-iot.calit2.net/user";
-                String values = function+fname+email;
-
-                if (email.length() == 0 || fname.length() == 0) {
-                    AlertDialog.Builder ad = new AlertDialog.Builder(Find_PasswordActivity.this);
-                    ad.setTitle("Text Error");
-                    ad.setMessage("Please Enter your First name or Email");
-                    ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.show();
-                    return;
-                }
-
-                NetworkTask_find networkTask = new NetworkTask_find(url, values);
-                networkTask.execute();
-            }
         }
     }
 }

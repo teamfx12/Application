@@ -14,102 +14,50 @@ import org.json.JSONObject;
 
 public class Change_PasswordActivity extends AppCompatActivity {
 
-    protected EditText Current_PW;
-    protected EditText New_PW;
-    protected EditText Re_New_PW;
+    protected EditText currentPW;
+    protected EditText newPW;
+    protected EditText conformNewPW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change__password);
-
-        Current_PW = findViewById(R.id.CurrentPW);
-        New_PW = findViewById(R.id.NewPW);
-        Re_New_PW = findViewById(R.id.ReNewPW);
+        setContentView(R.layout.activity_change__password);         // content connection with activity_log_in
+        currentPW = findViewById(R.id.currentPW);                   // get User input
+        newPW = findViewById(R.id.newPW);
+        conformNewPW = findViewById(R.id.conformNewPW);
     }
 
-    public class NetworkTask_change extends AsyncTask<Void, Void, String> {
-
-        private String url;
-        private String values;
-
-        public NetworkTask_change(String url, String values) {
-            this.url = url;
-            this.values = values;
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            String result; // 요청 결과를 저장할 변수.
-            RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
-            result = requestHttpURLConnection.request(url, values); // 해당 URL로 부터 결과물을 얻어온다.
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            String Msg;
-            String title;
-            try {
-                JSONObject json_result = new JSONObject(s);
-                title = json_result.getString("status");
-                if (title.equals("ok")) {
-                    //Msg = "Please Check your Email \" "+json_result.getString("email") + " \" and click your link" ;
-                    Msg = "Your password is changed successfully";
-                    Show_dialog(title, Msg);
-                    Intent intent_main = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent_main);
-                    return;
-                } else {
-                    Msg = "Msg : " + json_result.getString("msg");
-                }
-            } catch (JSONException e) {
-                title = "Error";
-                Msg = "JSON parsing Error";
-            }
-            Show_dialog(title, Msg);
-        }
-        private void Show_dialog(String title, String Msg){
-            AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
-            ad.setTitle(title);
-            ad.setMessage(Msg);
-            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            ad.show();
-        }
-    }
-
-    public void onclick_find(View view){
+    public void onClickChange(View view){
         switch (view.getId()){
-            case R.id.Find: {
-                String function = "function=change-pw&";
-                String current_pw ="currentpw="+this.Current_PW.getText().toString();
-                String new_pw = "newpw="+this.New_PW.getText().toString();
-                String re_new_pw = this.Re_New_PW.getText().toString();
-                String url = "http://teamf-iot.calit2.net/user";
-                String values = function+current_pw+"&"+new_pw;
-
-                if (current_pw.length() == 0 || new_pw.length() == 0 || re_new_pw.length() == 0) {
-                    AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
-                    ad.setTitle("Text Error");
-                    ad.setMessage("Please Enter your Password");
-                    ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    ad.show();
-                    return;
+            case R.id.btnChange: {
+                // get data sent form user
+                String JSON_base[] = {"function", "token", "currentpw", "newpw"};
+                String input_str[] = new String[4];
+                // [0] : function // [1] : token // [2] : currentpw // [3] : newpw
+                input_str[0] = "change-pw";
+                input_str[1] = GlobalVar.getToken();
+                input_str[2] = this.currentPW.getText().toString();
+                input_str[3] = this.newPW.getText().toString();
+                // pw are not entered
+                for(int i = 2 ;i < input_str.length; i++) {
+                    if(input_str[i].length() == 0) {
+                        AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
+                        ad.setTitle("Text Error");
+                        ad.setMessage("Please Enter your " + JSON_base[i]);
+                        ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        ad.show();
+                        return;
+                    }
                 }
-                if (!current_pw.equals(re_new_pw)){
+                // new password and conform password are not matched
+                if (!input_str[3].equals(this.conformNewPW.getText().toString())){
                     AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
-                    ad.setTitle("PassWord Error");
+                    ad.setTitle("PassWord conform Error");
                     ad.setMessage("your new two password are not same");
                     ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
@@ -120,9 +68,97 @@ public class Change_PasswordActivity extends AppCompatActivity {
                     ad.show();
                     return;
                 }
-                NetworkTask_change networkTask_change = new NetworkTask_change(url, values);
-                networkTask_change.execute();
+                // new password is same with current password
+                else if (input_str[2].equals(input_str[3])){
+                    AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
+                    ad.setTitle("PassWord change Error");
+                    ad.setMessage("Please make your new and current password different");
+                    ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    ad.show();
+                    return;
+                }
+                String url = "http://teamf-iot.calit2.net/user";
+                String values = "";
+                // make data to JSON format
+                for(int i=0;i<input_str.length;i++) {
+                    values = values + JSON_base[i] + "=";
+                    values = values + input_str[i];
+                    if(i!=input_str.length-1) {
+                        values = values + "&";
+                    }
+                }
+                // call Method to communicate with server
+                NetworkTaskChange networkTaskChange = new NetworkTaskChange(url, values);
+                networkTaskChange.execute();
             }
+        }
+    }
+    // to communication with Server
+    public class NetworkTaskChange extends AsyncTask<Void, Void, String> {
+        private String url;                     // Server URL
+        private String values;                  // Values passing to Server form Android
+        //constructor
+        public NetworkTaskChange(String url, String values) {
+            this.url = url;
+            this.values = values;
+        }
+        //start from here
+        @Override
+        protected String doInBackground(Void... params) {
+            String result;                      // Variable to store value from Server "url"
+            RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
+            result = requestHttpURLConnection.request(url, values);     // get result from this "url"
+            return result;
+        }
+        // start after done doInBackground, result will be s in this function
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            String msg;                         // msg to show to the user
+            String title;                       // title of Msg
+            try {
+                JSONObject json_result = new JSONObject(s);             // make JSONObject to store data from the Server
+                title = json_result.getString("status");                // title will be value of s's "status"
+                // if user can change their password,
+                if (title.equals("ok")) {
+                    msg = "Your password is changed successfully";      // show this message then exit
+                    showDialog(title, msg);
+                    return;
+                }else if(title.equals("token_expired")){                // when passing token is expired
+                    msg = "Msg : " +json_result.getString("msg");
+                }
+                else {
+                    msg = "Msg : " + json_result.getString("msg");
+                }
+            } catch (JSONException e) {
+                msg = "JSON parsing Error";
+            }
+            showDialog("Error", msg);
+        }
+        private void showDialog(final String title, String Msg){
+            AlertDialog.Builder ad = new AlertDialog.Builder(Change_PasswordActivity.this);
+            ad.setTitle(title);
+            ad.setMessage(Msg);
+            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if(title.equals("ok")) {
+                        Intent to_main = new Intent(getApplicationContext(), UserMainActivity.class);
+                        startActivity(to_main);
+                    }
+                    else if(title.equals("token_expired")) {
+                        Intent to_login = new Intent(getApplicationContext(), Log_inActivity.class);
+                        startActivity(to_login);
+                    }
+                }
+            });
+            ad.show();
         }
     }
 }

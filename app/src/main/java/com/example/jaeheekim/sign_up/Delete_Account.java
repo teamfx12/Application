@@ -53,7 +53,7 @@ public class Delete_Account extends AppCompatActivity {
                 if (title.equals("ok")) {
                     Msg = "We mailed your password";
                     Show_dialog(title, Msg);
-                    Intent intent_main = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent_main = new Intent(getApplicationContext(), Log_inActivity.class);
                     startActivity(intent_main);
                     return;
                 } else {
@@ -79,13 +79,14 @@ public class Delete_Account extends AppCompatActivity {
         }
     }
 
-    public void onclick_find(View view){
+    public void onClickDelete(View view){
         switch (view.getId()){
-            case R.id.Find: {
+            case R.id.btnDelete: {
                 String function = "function=delete-pw&";
                 String pw ="pw="+this.Text_Password.getText().toString();
+                String token = GlobalVar.getToken();
                 String url = "http://teamf-iot.calit2.net/user";
-                String values = function+pw;
+                String values = function+pw+"&"+token;
 
                 if (pw.length() == 0) {
                     AlertDialog.Builder ad = new AlertDialog.Builder(Delete_Account.this);

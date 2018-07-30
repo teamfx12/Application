@@ -31,9 +31,8 @@ public class RequestHttpURLConnection {
             if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK)
                 return null;
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConn.getInputStream(), "UTF-8"), urlConn.getContentLength() );
-            String buf;
-            buf = reader.readLine();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConn.getInputStream(), "UTF-8"));
+            String buf = reader.readLine().toString();
             return buf;
         } catch (MalformedURLException e) { // for URL.
             e.printStackTrace();

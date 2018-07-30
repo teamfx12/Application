@@ -3,6 +3,11 @@ package com.example.jaeheekim.sign_up;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -13,6 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class Current_LocationActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    //FusedLocationProviderClient mFuseLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,4 +49,33 @@ public class Current_LocationActivity extends FragmentActivity implements OnMapR
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
+
+    /*private void createLocationCallback() {
+        mFuseLocationClient = new LocationCallback(){
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+
+                mCurrentLocation = locationResult.getLastLocation();
+                updateLocationUI();
+            }
+        };
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void updateLocationUI(){
+        if(mMap == null) return;
+        if(mLocationPermissionGranted) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled((true));
+        } else {
+            mMap.setMyLocationEnabled(false);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        }
+    }
+
+    private void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval
+    }*/
 }

@@ -8,23 +8,23 @@
     tools:context=".RegisterActivity">
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/WOFA"
         android:layout_width="180dp"
         android:layout_height="30dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintHorizontal_bias="0.982"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.003"
+        app:layout_constraintVertical_bias="0.011"
         app:srcCompat="@drawable/nametext" />
 
     <TextView
-        android:id="@+id/Page_name"
+        android:id="@+id/PageName"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="26dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
@@ -36,15 +36,15 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.204"
+        app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.112"/>
+        app:layout_constraintVertical_bias="0.11" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/background"
         android:layout_width="298dp"
-        android:layout_height="384dp"
+        android:layout_height="373dp"
         android:layout_marginBottom="456dp"
         android:layout_marginEnd="267dp"
         android:layout_marginLeft="267dp"
@@ -62,7 +62,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/layout"
         android:layout_width="292dp"
-        android:layout_height="405dp"
+        android:layout_height="375dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -73,10 +73,10 @@
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.333">
+        app:layout_constraintVertical_bias="0.373">
 
         <EditText
-            android:id="@+id/E_mail"
+            android:id="@+id/email"
             android:layout_width="280dp"
             android:layout_height="44dp"
             android:layout_marginBottom="8dp"
@@ -93,7 +93,7 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <Button
-            android:id="@+id/Check"
+            android:id="@+id/btnCheck"
             android:layout_width="70dp"
             android:layout_height="36dp"
             android:layout_marginBottom="56dp"
@@ -103,7 +103,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="@color/colorPrimary"
-            android:onClick="onclick_check"
+            android:onClick="onClickCheck"
             android:text="Check"
             android:textColor="#ffffff"
             android:textSize="18dp"
@@ -114,7 +114,7 @@
             app:layout_constraintVertical_bias="0.199" />
 
         <EditText
-            android:id="@+id/First_name"
+            android:id="@+id/firstName"
             android:layout_width="134dp"
             android:layout_height="44dp"
             android:layout_marginBottom="8dp"
@@ -124,7 +124,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:ems="10"
-            android:hint="First name"
+            android:hint="  First name"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -134,7 +134,7 @@
             app:layout_constraintVertical_bias="0.344" />
 
         <EditText
-            android:id="@+id/Last_name"
+            android:id="@+id/lastName"
             android:layout_width="134dp"
             android:layout_height="44dp"
             android:layout_marginBottom="8dp"
@@ -142,7 +142,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:ems="10"
-            android:hint="Last name"
+            android:hint="  Last name"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -152,7 +152,7 @@
             app:layout_constraintVertical_bias="0.344" />
 
         <EditText
-            android:id="@+id/Password"
+            android:id="@+id/password"
             android:layout_width="280dp"
             android:layout_height="44dp"
             android:layout_marginBottom="8dp"
@@ -185,7 +185,7 @@
             app:layout_constraintVertical_bias="0.647" />
 
         <Button
-            android:id="@+id/Done"
+            android:id="@+id/btnDone"
             android:layout_width="70dp"
             android:layout_height="36dp"
             android:layout_marginBottom="8dp"
@@ -195,7 +195,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="@color/colorPrimary"
-            android:onClick="onclick_register"
+            android:onClick="onClickRegister"
             android:text="DONE"
             android:textColor="#ffffff"
             android:textSize="18dp"
