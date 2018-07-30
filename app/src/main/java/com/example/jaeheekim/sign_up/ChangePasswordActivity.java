@@ -17,6 +17,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     protected EditText currentPW;
     protected EditText newPW;
     protected EditText conformNewPW;
+    private boolean flag = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +94,11 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     }
                 }
                 // call Method to communicate with server
-                NetworkTaskChange networkTaskChange = new NetworkTaskChange(url, values);
-                networkTaskChange.execute();
+                if(flag == true) {
+                    flag = false;
+                    NetworkTaskChange networkTaskChange = new NetworkTaskChange(url, values);
+                    networkTaskChange.execute();
+                }
             }
         }
     }
@@ -131,14 +135,17 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     return;
                 }else if(title.equals("token_expired")){                // when passing token is expired
                     msg = "Msg : " +json_result.getString("msg");
+                    showDialog("Error", msg);
                 }
                 else {
                     msg = "Msg : " + json_result.getString("msg");
+                    showDialog("Error", msg);
                 }
             } catch (JSONException e) {
                 msg = "JSON parsing Error";
+                showDialog("Error", msg);
             }
-            showDialog("Error", msg);
+            flag = true;
         }
         private void showDialog(final String title, String Msg){
             AlertDialog.Builder ad = new AlertDialog.Builder(ChangePasswordActivity.this);
@@ -151,10 +158,12 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     if(title.equals("ok")) {
                         Intent to_main = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(to_main);
+                        finish();
                     }
                     else if(title.equals("token_expired")) {
                         Intent to_login = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(to_login);
+                        finish();
                     }
                 }
             });

@@ -19,6 +19,7 @@ public class LoginActivity extends AppCompatActivity {
 
     protected EditText textEmail;
     protected EditText textPassword;
+    private Boolean flag = true;
     //protected Button Sign_in;
     //protected InputMethodManager imm;
     //protected ConstraintLayout layout;
@@ -97,8 +98,11 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
                 // call Method to communicate with server
-                NetworkTask networkTask = new NetworkTask(url, values);
-                networkTask.execute();
+                if(flag == true) {
+                    flag = false;
+                    NetworkTask networkTask = new NetworkTask(url, values);
+                    networkTask.execute();
+                }
             }
         }
     }
@@ -142,6 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                     GlobalVar.setTokenExpire(format.parse(json_result.getString("token_expire")));
                     //send title : ok, msg : Login\nHello, is_temp : ?
                     showDialog(title,msg,isTemp);
+                    flag = true;
                     return;
                 } else {
                     //title is "error"
@@ -153,6 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             showDialog("Error", msg, 0);
+            flag = true;
         }
 
         // use own showDialog to check isTemp.
@@ -167,13 +173,15 @@ public class LoginActivity extends AppCompatActivity {
                     dialog.dismiss();   // first dialog dismiss
                     // if user login with temp password let user change the password
                     if(title.equals("ok") && isTemp == 1){
-                        Intent change_pw = new Intent(getApplicationContext(), ChangePasswordActivity.class);
-                        startActivity(change_pw);
+                        Intent toChange = new Intent(getApplicationContext(), ChangePasswordActivity.class);
+                        startActivity(toChange);
+                        finish();
                     }
                     // user login successfully. go to MainActivity
                     else if(title.equals("ok")) {
-                        Intent location = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(location);
+                        Intent toMain = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(toMain);
+                        finish();
                     }
                 }
             });
@@ -184,8 +192,8 @@ public class LoginActivity extends AppCompatActivity {
     public void onClickRegister(View v) {
         switch (v.getId()) {
             case R.id.btnRegister: {
-                Intent reg = new Intent(getApplicationContext(), RegisterActivity.class);
-                startActivity(reg);
+                Intent toRegi = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(toRegi);
             }
         }
     }

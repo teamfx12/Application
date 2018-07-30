@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import org.json.JSONException;
@@ -20,6 +21,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText password;
     private Boolean emailChecked=false;
     private String emailCheck;
+    private boolean flag=true;
+    private CheckBox checkBox;
     //private ConstraintLayout layout;
     //protected Button Check;
     //protected Button Done;
@@ -33,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
         lastName = findViewById(R.id.lastName);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
+        checkBox = findViewById(R.id.checkBox);
         //layout = (ConstraintLayout) findViewById(R.id.layout);
         //Check = (Button) findViewById(R.id.Check);
         //Done = (Button) findViewById(R.id.Done);
@@ -71,7 +75,6 @@ public class RegisterActivity extends AppCompatActivity {
         ad.setTitle(title);
         ad.setMessage(Msg);
         ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -91,8 +94,13 @@ public class RegisterActivity extends AppCompatActivity {
                 String url = "http://teamf-iot.calit2.net/user";
                 String values = function + email;           // make data to JSON format
                 // send request to server
-                NetworkTaskEmail networkTaskEmail = new NetworkTaskEmail(url, values);
-                networkTaskEmail.execute();
+                if(flag == true && emailCheck.contains("@")) {
+                    NetworkTaskEmail networkTaskEmail = new NetworkTaskEmail(url, values);
+                    networkTaskEmail.execute();
+                } else if(!emailCheck.contains("@")){
+                    emailChecked = false;
+                    showDialog("Error","It is not correct form");
+                }
             }
         }
     }
@@ -137,6 +145,7 @@ public class RegisterActivity extends AppCompatActivity {
                 msg = "JSON parsing Error";
             }
             showDialog("Error", msg);
+            flag = true;
         }
     }
 
@@ -156,8 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
                     input_str[3] = this.email.getText().toString();
                 else {
                     emailChecked = false;
-                    input_str[3] = null;
-                    showDialog("Error", "You need to check your email first");
+                    input_str[3] = " ";
                 }
                 input_str[4] = this.password.getText().toString();
                 // conform everything has entered
@@ -187,9 +195,14 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
                 // after email duplication check, send request to Server
-                if (emailChecked == true) {
+                if (emailChecked == true && flag == true && checkBox.isChecked()) {
+                    flag = false;
                     NetworkTaskRegi networkTaskRegi = new NetworkTaskRegi(url, values);
                     networkTaskRegi.execute();
+                } else if(emailChecked == false) {
+                    showDialog("Error", "You need to check your email first");
+                } else if(!checkBox.isChecked()) {
+                    showDialog("Error", "You need to check our checkBox");
                 }
             }
         }
@@ -235,6 +248,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
             // use own showDialog to check everything gonna be alright, then go to Login Screen
             this.showDialog(title, msg);
+            flag = true;
         }
 
         // use own showDialog to check user can register
@@ -250,6 +264,7 @@ public class RegisterActivity extends AppCompatActivity {
                     if(title.equals("ok")) {
                         Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(toLogin);
+                        finish();
                     }
                 }
             });

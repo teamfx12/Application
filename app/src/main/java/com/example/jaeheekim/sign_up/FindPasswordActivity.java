@@ -16,6 +16,7 @@ public class FindPasswordActivity extends AppCompatActivity {
 
     protected EditText textFname;
     protected EditText textEmail;
+    private boolean flag=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +64,11 @@ public class FindPasswordActivity extends AppCompatActivity {
                     }
                 }
                 // call Method to communicate with server
-                NetworkTaskFind networkTaskFind = new NetworkTaskFind(url, values);
-                networkTaskFind.execute();
+                if(flag == true) {
+                    flag = false;
+                    NetworkTaskFind networkTaskFind = new NetworkTaskFind(url, values);
+                    networkTaskFind.execute();
+                }
             }
         }
     }
@@ -103,11 +107,13 @@ public class FindPasswordActivity extends AppCompatActivity {
                     return;
                 } else {
                     msg = "Msg : " + json_result.getString("msg");
+                    showDialog("Error", msg);
                 }
             } catch (JSONException e) {
                 msg = "JSON parsing Error";
-        }
-            showDialog("Error", msg);
+                showDialog("Error", msg);
+            }
+            flag = true;
         }
         private void showDialog(final String title, String Msg){
             AlertDialog.Builder ad = new AlertDialog.Builder(FindPasswordActivity.this);
@@ -121,6 +127,7 @@ public class FindPasswordActivity extends AppCompatActivity {
                     if(title.equals("ok")) {
                         Intent toMain = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(toMain);
+                        finish();
                     }
                 }
             });

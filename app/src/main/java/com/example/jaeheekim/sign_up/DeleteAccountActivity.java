@@ -73,6 +73,7 @@ public class DeleteAccountActivity extends AppCompatActivity {
                     if(title == "ok") {
                         Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(toLogin);
+                        finish();
                     }
                 }
             });
