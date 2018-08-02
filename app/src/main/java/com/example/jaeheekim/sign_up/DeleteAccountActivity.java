@@ -80,7 +80,6 @@ public class DeleteAccountActivity extends AppCompatActivity {
             ad.show();
         }
     }
-
     public void onClickDelete(View view){
         switch (view.getId()){
             case R.id.btnDelete: {

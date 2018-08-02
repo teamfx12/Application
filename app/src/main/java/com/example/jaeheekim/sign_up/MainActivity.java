@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -16,7 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,12 +32,17 @@ public class MainActivity extends AppCompatActivity
 
     protected TextView userName;
     private boolean flag = true;
+    private long backPressedTime = 0;    // used by onBackPressed()
+
+    public MainActivity() {
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -43,7 +51,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Donation", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -62,12 +70,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+    public void onBackPressed() {        // to prevent irritating accidental logouts
+        long t = System.currentTimeMillis();
+        if (t - backPressedTime > 2000) {    // 2 secs
+            backPressedTime = t;
+            Toast.makeText(this, "Press back again to logout",
+                    Toast.LENGTH_SHORT).show();
+        } else {    // this guy is serious
+            // clean up
+            super.onBackPressed();       // bye
         }
     }
 
@@ -92,6 +103,7 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+
     // to communication with Server to check ID duplication
     public class NetworkTaskLogOut extends AsyncTask<Void, Void, String> {
 
@@ -127,15 +139,15 @@ public class MainActivity extends AppCompatActivity
                 }
                 else {  // ID user enter is in database already
                     msg = "sorry";     // show this massage
-                    showDialog("Error", msg);
+                    this.showDialog("Error", msg);
                 }
             } catch (JSONException e) {
                 msg = "JSON parsing Error";
-                showDialog("Error", msg);
+                this.showDialog("Error", msg);
             } catch (ParseException e) {
                 e.printStackTrace();
                 msg = "Token expire Error";
-                showDialog("Error", msg);
+                this.showDialog("Error", msg);
             }
             flag = false;
         }
@@ -162,57 +174,64 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        } else if (id == R.id.nav_changePassword) {
+        if (id == R.id.nav_current) {
             try {
                 if(GlobalVar.isTokenExpired()) {
-                    Intent toChangepw = new Intent(getApplicationContext(), ChangePasswordActivity.class);
-                    startActivity(toChangepw);
-                } else {
-                    Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(toLogin);
-                    finish();
+                    Intent toCurrent = new Intent(getApplicationContext(), CurrentLocationActivity.class);
+                    startActivity(toCurrent);
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-        } else if (id == R.id.nav_LogOut) {
-            this.showDialog("Log out", "Are you sure??");
-        } else if (id == R.id.nav_DeleteAccount) {
-            try {
-                if(GlobalVar.isTokenExpired()) {
-                    Intent toDelete = new Intent(getApplicationContext(), DeleteAccountActivity.class);
-                    startActivity(toDelete);
-                    finish();
-                } else {
-                    Intent toLogin = new Intent(getApplicationContext(), ChangePasswordActivity.class);
-                    startActivity(toLogin);
-                    finish();
+            } else if (id == R.id.nav_gallery) {
+
+            } else if (id == R.id.nav_slideshow) {
+
+            } else if (id == R.id.nav_manage) {
+
+            } else if (id == R.id.nav_share) {
+
+            } else if (id == R.id.nav_send) {
+
+            } else if (id == R.id.nav_changePassword) {
+                try {
+                    if(GlobalVar.isTokenExpired()) {
+                        Intent toChangepw = new Intent(getApplicationContext(), ChangePasswordActivity.class);
+                        startActivity(toChangepw);
+                    } else {
+                        Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(toLogin);
+                        finish();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
+            } else if (id == R.id.nav_LogOut) {
+                this.showDialog("Log out", "Are you sure??");
+            } else if (id == R.id.nav_DeleteAccount) {
+                try {
+                    if(GlobalVar.isTokenExpired()) {
+                        Intent toDelete = new Intent(getApplicationContext(), DeleteAccountActivity.class);
+                        startActivity(toDelete);
+                        finish();
+                    } else {
+                        Intent toLogin = new Intent(getApplicationContext(), ChangePasswordActivity.class);
+                        startActivity(toLogin);
+                        finish();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
     // to show the message to user
-    public void showDialog(final String title, String Msg){
+    public void showDialog(final String title, String msg){
         AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
         ad.setTitle(title);
-        ad.setMessage(Msg);
+        ad.setMessage(msg);
         ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
