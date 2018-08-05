@@ -198,10 +198,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
     // change to Finding Password screen
-    public void onClickFind(View v) {
+    public void onClickReset(View v) {
         switch (v.getId()) {
-            case R.id.btnFindPassword: {
-                Intent find = new Intent(getApplicationContext(), FindPasswordActivity.class);
+            case R.id.btnResetPassword: {
+                Intent find = new Intent(getApplicationContext(), ResetPasswordActivity.class);
                 startActivity(find);
             }
         }

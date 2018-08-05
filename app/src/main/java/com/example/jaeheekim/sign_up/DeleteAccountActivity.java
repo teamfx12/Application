@@ -15,6 +15,7 @@ import org.json.JSONObject;
 public class DeleteAccountActivity extends AppCompatActivity {
 
     protected EditText Text_Password;
+    private boolean flag = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,46 +23,48 @@ public class DeleteAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_delete_account);
         Text_Password = findViewById(R.id.Password);
     }
-
+    // to communication with Server
     public class NetworkTaskDelete extends AsyncTask<Void, Void, String> {
-
-        private String url;
-        private String values;
-
+        private String url;                     // Server URL
+        private String values;                  // Values passing to Server form Android
+        //constructor
         public NetworkTaskDelete(String url, String values) {
             this.url = url;
             this.values = values;
         }
-
+        //start from here
         @Override
         protected String doInBackground(Void... params) {
-            String result; // 요청 결과를 저장할 변수.
+            String result;                      // Variable to store value from Server "url"
             RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
-            result = requestHttpURLConnection.request(url, values); // 해당 URL로 부터 결과물을 얻어온다.
+            result = requestHttpURLConnection.request(url, values);     // get result from this "url"
             return result;
         }
-
+        // start after done doInBackground, result will be s in this function
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            String Msg;
-            String title;
+            String msg;                         // msg to show to the user
+            String title;                       // title of Msg
             try {
-                JSONObject json_result = new JSONObject(s);
-                title = json_result.getString("status");
+                JSONObject json_result = new JSONObject(s);             // make JSONObject to store data from the Server
+                title = json_result.getString("status");                // title will be value of s's "status"
                 if (title.equals("ok")) {
-                    Msg = "Thank you for using our Application";
-                    ShowDialog(title, Msg);
+                    msg = "Thank you for using our Application";
+                    ShowDialog(title, msg);
                     return;
                 } else {
-                    Msg = "Msg : " + json_result.getString("msg");
+                    msg = "Msg : " + json_result.getString("msg");
+                    ShowDialog(title, msg);
                 }
             } catch (JSONException e) {
                 title = "Error";
-                Msg = "JSON parsing Error";
+                msg = "JSON parsing Error";
+                ShowDialog(title, msg);
             }
-            ShowDialog(title, Msg);
+            flag = true;
         }
+
         private void ShowDialog(final String title, String Msg){
             AlertDialog.Builder ad = new AlertDialog.Builder(DeleteAccountActivity.this);
             ad.setTitle(title);
@@ -70,7 +73,7 @@ public class DeleteAccountActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    if(title == "ok") {
+                    if(title.equals("ok")) {
                         Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(toLogin);
                         finish();
@@ -80,14 +83,15 @@ public class DeleteAccountActivity extends AppCompatActivity {
             ad.show();
         }
     }
+
     public void onClickDelete(View view){
         switch (view.getId()){
             case R.id.btnDelete: {
-                String function = "function=delet-account&";
-                String pw ="pw="+this.Text_Password.getText().toString();
-                String token = "token="+GlobalVar.getToken();
-                String url = "http://teamf-iot.calit2.net/user";
-                String values = function+pw+"&"+token;
+                String function = "function=delete-account&";
+                String pw ="passwd="+this.Text_Password.getText().toString();
+                String token = "&token="+GlobalVar.getToken();
+                final String url = "http://teamf-iot.calit2.net/user";
+                final String values = function+pw+token;
 
                 if (pw.length() == 0) {
                     AlertDialog.Builder ad = new AlertDialog.Builder(DeleteAccountActivity.this);
@@ -109,13 +113,21 @@ public class DeleteAccountActivity extends AppCompatActivity {
                 check.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if(flag == true) {
+                            flag = false;
+                            NetworkTaskDelete networkTaskDelete = new NetworkTaskDelete(url, values);
+                            networkTaskDelete.execute();
+                        }
                         dialog.dismiss();
                     }
                 });
+                check.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
                 check.show();
-
-                NetworkTaskDelete networkTaskDelete = new NetworkTaskDelete(url, values);
-                networkTaskDelete.execute();
             }
         }
     }

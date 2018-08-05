@@ -156,13 +156,13 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     if(title.equals("ok")) {
-                        Intent to_main = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(to_main);
+                        Intent toMain = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(toMain);
                         finish();
                     }
                     else if(title.equals("token_expired")) {
-                        Intent to_login = new Intent(getApplicationContext(), LoginActivity.class);
-                        startActivity(to_login);
+                        Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(toLogin);
                         finish();
                     }
                 }

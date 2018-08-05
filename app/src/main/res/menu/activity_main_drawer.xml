@@ -6,20 +6,20 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_current"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/location"
             android:title="Current air condition" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Finding Rout" />
+            android:id="@+id/nav_fingindRoute"
+            android:icon="@drawable/find"
+            android:title="Finding Route" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:icon="@drawable/heart"
+            android:title="Heart rate" />
         <item
             android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:icon="@drawable/history"
+            android:title="History" />
     </group>
 
     <item android:title="Communicate">
@@ -38,15 +38,15 @@
         <menu>
             <item
                 android:id="@+id/nav_changePassword"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/chpw"
                 android:title="Change Password" />
             <item
                 android:id="@+id/nav_LogOut"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/logout"
                 android:title="Log out" />
             <item
                 android:id="@+id/nav_DeleteAccount"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/cancle"
                 android:title="Delete Account" />
         </menu>
     </item>

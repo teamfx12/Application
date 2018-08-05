@@ -11,7 +11,7 @@
                 android:title="Change Password" />
             <item
                 android:id="@+id/nav_LogOut"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/refresh"
                 android:title="Log out" />
             <item
                 android:id="@+id/nav_DeleteAccount"

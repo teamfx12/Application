@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/btnFindPassword"
+            android:id="@+id/btnResetPassword"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_marginBottom="8dp"
@@ -44,8 +44,8 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="#00ff0000"
-            android:onClick="onClickFind"
-            android:text="Find Password"
+            android:onClick="onClickReset"
+            android:text="Reset Password"
             android:textColor="#FF767679"
             android:textSize="13dp"
             app:layout_constraintBottom_toBottomOf="parent"
