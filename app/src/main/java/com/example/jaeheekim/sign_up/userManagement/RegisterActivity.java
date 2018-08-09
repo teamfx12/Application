@@ -1,4 +1,4 @@
-package com.example.jaeheekim.sign_up;
+package com.example.jaeheekim.sign_up.userManagement;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
+import com.example.jaeheekim.sign_up.GlobalVar;
+import com.example.jaeheekim.sign_up.R;
+import com.example.jaeheekim.sign_up.RequestHttpURLConnection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +25,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText password;
     private Boolean emailChecked=false;
     private String emailCheck;
-    private boolean flag=true;
     private CheckBox checkBox;
     //private ConstraintLayout layout;
     //protected Button Check;
@@ -94,10 +97,10 @@ public class RegisterActivity extends AppCompatActivity {
                 String url = "http://teamf-iot.calit2.net/user";
                 String values = function + email;           // make data to JSON format
                 // send request to server
-                if(flag == true && emailCheck.contains("@")) {
+                if(GlobalVar.getFlag() == true && emailCheck.contains("@") && emailCheck.contains(".")) {
                     NetworkTaskEmail networkTaskEmail = new NetworkTaskEmail(url, values);
                     networkTaskEmail.execute();
-                } else if(!emailCheck.contains("@")){
+                } else if(!(emailCheck.contains("@")&& emailCheck.contains("."))){
                     emailChecked = false;
                     showDialog("Error","It is not correct form");
                 }
@@ -145,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
                 msg = "JSON parsing Error";
             }
             showDialog("Error", msg);
-            flag = true;
+            GlobalVar.setFlag(true);
         }
     }
 
@@ -195,8 +198,8 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
                 // after email duplication check, send request to Server
-                if (emailChecked == true && flag == true && checkBox.isChecked()) {
-                    flag = false;
+                if (emailChecked == true && GlobalVar.getFlag() == true && checkBox.isChecked()) {
+                    GlobalVar.setFlag(false);
                     NetworkTaskRegi networkTaskRegi = new NetworkTaskRegi(url, values);
                     networkTaskRegi.execute();
                 } else if(emailChecked == false) {
@@ -248,7 +251,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
             // use own showDialog to check everything gonna be alright, then go to Login Screen
             this.showDialog(title, msg);
-            flag = true;
+            GlobalVar.setFlag(true);
         }
 
         // use own showDialog to check user can register

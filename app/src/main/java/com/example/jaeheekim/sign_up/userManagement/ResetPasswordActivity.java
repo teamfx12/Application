@@ -1,4 +1,4 @@
-package com.example.jaeheekim.sign_up;
+package com.example.jaeheekim.sign_up.userManagement;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.jaeheekim.sign_up.GlobalVar;
+import com.example.jaeheekim.sign_up.R;
+import com.example.jaeheekim.sign_up.RequestHttpURLConnection;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,7 +20,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     protected EditText textFname;
     protected EditText textEmail;
-    private boolean flag=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +67,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     }
                 }
                 // call Method to communicate with server
-                if(flag == true) {
-                    flag = false;
+                if(GlobalVar.getFlag() == true) {
+                    GlobalVar.setFlag(false);
                     NetworkTaskReset networkTaskReset = new NetworkTaskReset(url, values);
                     networkTaskReset.execute();
                 }
@@ -113,7 +116,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 msg = "JSON parsing Error";
                 showDialog("Error", msg);
             }
-            flag = true;
+            GlobalVar.setFlag(true);
         }
         private void showDialog(final String title, String Msg){
             AlertDialog.Builder ad = new AlertDialog.Builder(ResetPasswordActivity.this);

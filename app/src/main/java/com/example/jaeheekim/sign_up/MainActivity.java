@@ -1,23 +1,34 @@
 package com.example.jaeheekim.sign_up;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.example.jaeheekim.sign_up.device.BluetoothActivity;
+import com.example.jaeheekim.sign_up.device.MyPolarBleReceiver;
+import com.example.jaeheekim.sign_up.userManagement.ChangePasswordActivity;
+import com.example.jaeheekim.sign_up.userManagement.DeleteAccountActivity;
+import com.example.jaeheekim.sign_up.userManagement.LoginActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +42,9 @@ public class MainActivity extends AppCompatActivity
     protected TextView userName;
     private boolean flag = true;
     private long backPressedTime = 0;    // used by onBackPressed()
+    public  static Activity mainActivity;
+    private ProgressBar progressBar;
+    private Handler handler = new Handler();
 
     public MainActivity() {
     }
@@ -39,6 +53,10 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ImageView heart = (ImageView) findViewById(R.id.gif_image);
+        GlideDrawableImageViewTarget gifImage = new GlideDrawableImageViewTarget(heart);
+        Glide.with(this).load(R.drawable.heart).into(gifImage);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -49,11 +67,56 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        activatePolar();
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(GlobalVar.getHeartRate());
+                        }
+                    });
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         userName = findViewById(R.id.User_name);
         userName.setText(GlobalVar.getFname()+" "+GlobalVar.getLname());
+
+        mainActivity = this;
+    }
+
+    private final MyPolarBleReceiver mPolarBleUpdateReceiver = new MyPolarBleReceiver() {};
+
+    protected void activatePolar() {
+        Log.w(this.getClass().getName(), "activatePolar()");
+        registerReceiver(mPolarBleUpdateReceiver, makePolarGattUpdateIntentFilter());
+    }
+
+    protected void deactivatePolar() {
+        unregisterReceiver(mPolarBleUpdateReceiver);
+    }
+
+    private static IntentFilter makePolarGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(MyPolarBleReceiver.ACTION_HR_DATA_AVAILABLE);
+        return intentFilter;
     }
 
     @Override
@@ -73,28 +136,6 @@ public class MainActivity extends AppCompatActivity
                 networkTaskLogOut.execute();
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-        //    return true;
-        //}
-
-        return super.onOptionsItemSelected(item);
     }
 
     // to communication with Server to check ID duplication
@@ -161,6 +202,63 @@ public class MainActivity extends AppCompatActivity
             ad.show();
         }
     }
+
+    String menuUser[] = new String[] {"Log out", "Change password", "ID cancellation"};
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        for(int i = 0; i < menuUser.length; i++)
+            menu.add(0, i+1, 0, menuUser[i]);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case 1:
+                try {
+                    if(GlobalVar.isTokenExpired()) {
+                        this.showDialog("Log out", "Are you sure??");
+                    } else {
+                        Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(toLogin);
+                        finish();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            case 2:
+                try {
+                    if(GlobalVar.isTokenExpired()) {
+                        Intent toChangepw = new Intent(getApplicationContext(), ChangePasswordActivity.class);
+                        startActivity(toChangepw);
+                    } else {
+                        Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(toLogin);
+                        finish();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            case 3:
+                try {
+                    if(GlobalVar.isTokenExpired()) {
+                        Intent toDelete = new Intent(getApplicationContext(), DeleteAccountActivity.class);
+                        startActivity(toDelete);
+                    } else {
+                        Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(toLogin);
+                        finish();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return true;
+        }
+        return false;
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -186,56 +284,15 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         } else if (id == R.id.nav_slideshow) {
-            Intent toFinding = new Intent(getApplicationContext(), CircleDemoActivity.class);
-            startActivity(toFinding);
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_history) {
             Intent toFinding = new Intent(getApplicationContext(), CombinedChartActivity.class);
             startActivity(toFinding);
+        } else if (id == R.id.nav_manage) {
+            Intent toFinding = new Intent(getApplicationContext(), BluetoothActivity.class);
+            startActivity(toFinding);
         } else if (id == R.id.nav_share) {
-            Intent toFinding = new Intent(getApplicationContext(), MarkerCloseInfoWindowOnRetapDemoActivity.class);
+            Intent toFinding = new Intent(getApplicationContext(), SensorListViewActivity.class);
             startActivity(toFinding);
-        } else if (id == R.id.nav_send) {
-            Intent toFinding = new Intent(getApplicationContext(), MarkerDemoActivity.class);
-            startActivity(toFinding);
-        } else if (id == R.id.nav_changePassword) {
-            try {
-                if(GlobalVar.isTokenExpired()) {
-                    Intent toChangepw = new Intent(getApplicationContext(), ChangePasswordActivity.class);
-                    startActivity(toChangepw);
-                } else {
-                    Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(toLogin);
-                    finish();
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        } else if (id == R.id.nav_LogOut) {
-            try {
-                if(GlobalVar.isTokenExpired()) {
-                    this.showDialog("Log out", "Are you sure??");
-                } else {
-                    Intent toLogin = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(toLogin);
-                    finish();
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        } else if (id == R.id.nav_DeleteAccount) {
-            try {
-                if(GlobalVar.isTokenExpired()) {
-                    Intent toDelete = new Intent(getApplicationContext(), DeleteAccountActivity.class);
-                    startActivity(toDelete);
-                    finish();
-                } else {
-                    Intent toLogin = new Intent(getApplicationContext(), ChangePasswordActivity.class);
-                    startActivity(toLogin);
-                    finish();
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

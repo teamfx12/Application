@@ -1,4 +1,4 @@
-package com.example.jaeheekim.sign_up;
+package com.example.jaeheekim.sign_up.userManagement;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,13 +9,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.jaeheekim.sign_up.GlobalVar;
+import com.example.jaeheekim.sign_up.MainActivity;
+import com.example.jaeheekim.sign_up.R;
+import com.example.jaeheekim.sign_up.RequestHttpURLConnection;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DeleteAccountActivity extends AppCompatActivity {
 
     protected EditText Text_Password;
-    private boolean flag = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +66,7 @@ public class DeleteAccountActivity extends AppCompatActivity {
                 msg = "JSON parsing Error";
                 ShowDialog(title, msg);
             }
-            flag = true;
+            GlobalVar.setFlag(true);
         }
 
         private void ShowDialog(final String title, String Msg){
@@ -89,7 +93,7 @@ public class DeleteAccountActivity extends AppCompatActivity {
             case R.id.btnDelete: {
                 String function = "function=delete-account&";
                 String pw ="passwd="+this.Text_Password.getText().toString();
-                String token = "&token="+GlobalVar.getToken();
+                String token = "&token="+ GlobalVar.getToken();
                 final String url = "http://teamf-iot.calit2.net/user";
                 final String values = function+pw+token;
 
@@ -109,14 +113,15 @@ public class DeleteAccountActivity extends AppCompatActivity {
 
                 AlertDialog.Builder check = new AlertDialog.Builder(DeleteAccountActivity.this);
                 check.setTitle("Check");
-                check.setMessage("Are you sure to delete??");
+                check.setMessage("Are you sure delete your account???");
                 check.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(flag == true) {
-                            flag = false;
+                        if(GlobalVar.getFlag() == true) {
+                            GlobalVar.setFlag(false);
                             NetworkTaskDelete networkTaskDelete = new NetworkTaskDelete(url, values);
                             networkTaskDelete.execute();
+                            MainActivity.mainActivity.finish();
                         }
                         dialog.dismiss();
                     }

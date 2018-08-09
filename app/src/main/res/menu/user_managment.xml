@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="">
+
+    <item
+        android:id="@+id/changePassword"
+        android:icon="@drawable/chpw"
+        android:title="Change Password" />
+    <item
+        android:id="@+id/logOut"
+        android:icon="@drawable/logout"
+        android:title="Log out" />
+    <item
+        android:id="@+id/deleteAccount"
+        android:icon="@drawable/cancle"
+        android:title="Delete Account" />
+</menu>

@@ -15,14 +15,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONObject;
@@ -75,6 +78,7 @@ public class FindingRouteActivity extends AppCompatActivity
         // Destination of route
         String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
 
+
         // Sensor enabled
         String sensor = "sensor=false";
 
@@ -85,7 +89,9 @@ public class FindingRouteActivity extends AppCompatActivity
         String output = "json";
 
         // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+        String url = "https://maps.googleapis.com/maps/api/directions/" +
+                output + "?" + parameters + "&mode=b";
+
 
         return url;
     }
@@ -117,9 +123,9 @@ public class FindingRouteActivity extends AppCompatActivity
 
             // Invokes the thread for parsing the JSON data
             parserTask.execute(result);
+
         }
     }
-
 
     private String downloadUrl(String strUrl) throws IOException {
         String data = "";
@@ -347,10 +353,10 @@ public class FindingRouteActivity extends AppCompatActivity
                     return false;
                 }
             };
+
     private void enableMyLocationIfPermitted() {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_FINE_LOCATION},

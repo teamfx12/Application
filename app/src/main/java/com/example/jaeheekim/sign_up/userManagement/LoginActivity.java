@@ -1,4 +1,4 @@
-package com.example.jaeheekim.sign_up;
+package com.example.jaeheekim.sign_up.userManagement;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,6 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+
+import com.example.jaeheekim.sign_up.GlobalVar;
+import com.example.jaeheekim.sign_up.MainActivity;
+import com.example.jaeheekim.sign_up.R;
+import com.example.jaeheekim.sign_up.RequestHttpURLConnection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +24,6 @@ public class LoginActivity extends AppCompatActivity {
 
     protected EditText textEmail;
     protected EditText textPassword;
-    private Boolean flag = true;
     //protected Button Sign_in;
     //protected InputMethodManager imm;
     //protected ConstraintLayout layout;
@@ -98,8 +102,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
                 // call Method to communicate with server
-                if(flag == true) {
-                    flag = false;
+                if(GlobalVar.getFlag() == true) {
+                    GlobalVar.setFlag(false);
                     NetworkTask networkTask = new NetworkTask(url, values);
                     networkTask.execute();
                 }
@@ -128,6 +132,12 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            if(s == null){
+                showDialog("connection error","try latter",0);
+                return;
+            }
+
+
             String msg = null;                  // msg to show to the user
             String title;                       // title of Msg
             int isTemp;                         // Whether the passing password is temp password or not
@@ -146,9 +156,10 @@ public class LoginActivity extends AppCompatActivity {
                     GlobalVar.setTokenExpire(format.parse(json_result.getString("token_expire")));
                     //send title : ok, msg : Login\nHello, is_temp : ?
                     showDialog(title,msg,isTemp);
-                    flag = true;
+                    GlobalVar.setFlag(true);
                     return;
-                } else {
+                }
+                else {
                     //title is "error"
                     msg = "Message : " + json_result.getString("msg");
                 }
@@ -158,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             showDialog("Error", msg, 0);
-            flag = true;
+            GlobalVar.setFlag(true);
         }
 
         // use own showDialog to check isTemp.

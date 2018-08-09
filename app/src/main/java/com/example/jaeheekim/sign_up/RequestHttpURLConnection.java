@@ -24,10 +24,16 @@ public class RequestHttpURLConnection {
             urlConn.setReadTimeout(10000);
             urlConn.setDoInput(true);
             urlConn.setDoOutput(true);
-            OutputStream os = urlConn.getOutputStream();
-            os.write( body.getBytes("UTF-8") );
-            os.flush();
-            os.close();
+            OutputStream os;
+            try {
+                os = urlConn.getOutputStream();
+                os.write( body.getBytes("UTF-8") );
+                os.flush();
+                os.close();
+            }catch (IOException e){
+                return null;
+            }
+
             if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK)
                 return null;
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/cloudsky"
-    tools:context=".RegisterActivity">
+    tools:context=".userManagement.RegisterActivity">
 
     <ImageView
         android:id="@+id/WOFA"
@@ -20,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.011"
         app:srcCompat="@drawable/nametext" />
+
 
     <TextView
         android:id="@+id/PageName"

@@ -17,6 +17,9 @@ public class GlobalVar extends Application{
     private static String lname = null;
     private static Date tokenExpire;
     private static Date currentDate;
+    private static int heartRate;
+    private static int maxHeartRate = 0;
+    private static boolean flag = true;
 
     @Override
     public void onCreate(){
@@ -60,6 +63,26 @@ public class GlobalVar extends Application{
     public static void setLname(String lname){
         GlobalVar.lname = lname;
     }
+
+    public static boolean getFlag(){
+        return flag;
+    }
+
+    public static void setFlag(boolean flag){
+        GlobalVar.flag = flag;
+    }
+
+    public static int getHeartRate(){
+        return heartRate;
+    }
+
+    public static void setHeartRate(int heartRate){
+        GlobalVar.heartRate = heartRate;
+        if(GlobalVar.heartRate > GlobalVar.maxHeartRate)
+            GlobalVar.maxHeartRate = GlobalVar.heartRate;
+    }
+
+    public static int getMaxHeartRate() { return maxHeartRate;}
 
     public static void setTokenExpire(Date tokenExpire) { GlobalVar.tokenExpire = tokenExpire; }
 

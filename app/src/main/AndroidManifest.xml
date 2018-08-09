@@ -10,10 +10,11 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <application
@@ -24,14 +25,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".userManagement.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".userManagement.RegisterActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -43,9 +44,9 @@
         <activity
             android:name=".CurrentLocationActivity"
             android:label="@string/title_activity_current__location" />
-        <activity android:name=".ResetPasswordActivity" />
-        <activity android:name=".DeleteAccountActivity" />
-        <activity android:name=".ChangePasswordActivity" />
+        <activity android:name=".userManagement.ResetPasswordActivity" />
+        <activity android:name=".userManagement.DeleteAccountActivity" />
+        <activity android:name=".userManagement.ChangePasswordActivity" />
         <activity
             android:name=".MainActivity"
             android:label="WOFA" />
@@ -54,19 +55,19 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDi8oRfuqAgIK0iJehg37la3LP6Ge1hsoI" />
 
-        <activity
-            android:name=".CircleDemoActivity"
-            android:label="@string/title_activity_circle_demo" />
-        <activity
-            android:name=".MarkerCloseInfoWindowOnRetapDemoActivity"
-            android:label="@string/title_activity_marker_close_info_window_on_retap_demo" />
-        <activity
-            android:name=".MarkerDemoActivity"
-            android:label="@string/title_activity_marker_demo" />
         <activity android:name=".CombinedChartActivity" />
         <activity
             android:name=".FindingRouteActivity"
             android:label="@string/title_activity_finding_route" />
+        <activity android:name=".device.BluetoothActivity" />
+        <activity
+            android:name=".device.DeviceListActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/select_device"
+            android:theme="@android:style/Theme.Holo.Dialog" />
+        <activity
+            android:name=".SensorListViewActivity"
+            android:label="@string/title_activity_sensor_list_view"></activity>
     </application>
 
 </manifest>
