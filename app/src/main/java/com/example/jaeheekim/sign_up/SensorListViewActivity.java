@@ -1,9 +1,7 @@
 package com.example.jaeheekim.sign_up;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,9 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,13 +26,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jaeheekim.sign_up.device.DeviceListActivity;
 import com.example.jaeheekim.sign_up.userManagement.LoginActivity;
-import com.example.jaeheekim.sign_up.userManagement.ResetPasswordActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -50,7 +45,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-
 public class SensorListViewActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         OnMapAndViewReadyListener.OnGlobalLayoutAndMapReadyListener,
@@ -60,8 +54,6 @@ public class SensorListViewActivity extends AppCompatActivity
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private GoogleMap mMap;
     private Marker mSelectedMarker = null;
-    private String url = "http://teamf-iot.calit2.net/user";
-    private int polar = 0;
     private int listSize = 0;
 
     protected int toColor[] = {0x807fff00, 0x80ffff00, 0x80ff7f50, 0x80ff0000, 0x80b03060, 0x80a0522d};
@@ -72,39 +64,27 @@ public class SensorListViewActivity extends AppCompatActivity
     private static final LatLng MELBOURNE = new LatLng(32.891521 , -117.237196);
     private static final LatLng SYDNEY = new LatLng(32.888096 , -117.235407);
     private static final LatLng ADELAIDE = new LatLng(32.882791 , -117.237879);
-    private static final LatLng PERTH = new LatLng(32.881912 , -117.243562);
+    private static final LatLng PERTH = new LatLng(32.881912 , -117.243562);*/
     private static final LatLng ZOE = new LatLng(32.886615 , -117.241287);
-*/
 
-    private static ArrayList<DeviceInfo> deviceList = new ArrayList<DeviceInfo>();
-    private static ArrayList<PolarInfo> polarList = new ArrayList<PolarInfo>();
+    //private static ArrayList<DeviceInfo> deviceList = new ArrayList<DeviceInfo>();
+    //private static ArrayList<PolarInfo> polarList = new ArrayList<PolarInfo>();
 
-    /*
     private static ArrayList<LatLng> locationArray = new ArrayList<LatLng>();
 
-    private static ArrayList<String> AQIArray = new ArrayList<String>();
-    private static ArrayList<String> COArray = new ArrayList<String>();
-    private static ArrayList<String> O3Array = new ArrayList<String>();
-    private static ArrayList<String> NO2Array = new ArrayList<String>();
-    private static ArrayList<String> SO2Array = new ArrayList<String>();
+    private static ArrayList<Integer> AQIArray = new ArrayList<Integer>();
 
-    //ArrayList<String> polarList = new ArrayList<String>();
-    ArrayList<String> boardMACList = new ArrayList<String>();
-    ArrayList<String> boardNameList = new ArrayList<String>();
+    private static ArrayList<String> boardMACList = new ArrayList<String>();
+    private static ArrayList<String> boardNameList = new ArrayList<String>();
 
-    String AQI[] = new String[] {"35","58","124","166","260","380"};
-    String CO[] = new String[] {"35","20","2","166","255","380"};
-    String O3[] = new String[] {"20","58","124","40","140","211"};
-    String NO2[] = new String[] {"34","14","42","98","260","300"};
-    String SO2[] = new String[] {"8", "14", "60", "44", "120", "20"};
-    */
+    int num = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor_list_view);
 
-        Toolbar toolbar = findViewById(R.id.toolbar_current);
+        Toolbar toolbar = findViewById(R.id.toolbar_list);
         setSupportActionBar(toolbar);
         setTitle("Sensor List");
         toolbar.setSubtitle("Near by you");
@@ -114,68 +94,29 @@ public class SensorListViewActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.current_location);
         new OnMapAndViewReadyListener(mapFragment, this);
-
-        if(GlobalVar.getFlag() == true) {
-            GlobalVar.setFlag(false);
-            //NetworkTaskListRequest networkTaskListRequest = new NetworkTaskListRequest(
-            //        url, "function=list&token="+GlobalVar.getToken());
-            //networkTaskListRequest.execute();
-        }
-/*
-        locationArray.add(BRISBANE);
-        locationArray.add(MELBOURNE);
-        locationArray.add(SYDNEY);
-        locationArray.add(ADELAIDE);
-        locationArray.add(PERTH);
-        locationArray.add(ZOE);
-*/
-        }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch ((item.getItemId())) {
-            case 1:
-                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                return true;
-            case 2:
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                return true;
-        }
-        return false;
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        menu.add(0, 1, 0, "Type : HYBRID");
-        menu.add(0, 2, 0, "Type : NORMAL");
-        return true;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
 
-        addMarkersToMap();
+        if(GlobalVar.getFlag() == true) {
+            GlobalVar.setFlag(false);
+            String url = "http://teamf-iot.calit2.net/API/sensor";
+            String msg = "function=list&token=" + GlobalVar.getToken();
+            NetworkTaskListRequest networkTaskListRequest = new NetworkTaskListRequest(url, msg);
+            networkTaskListRequest.execute();
+        }
 
         enableMyLocationIfPermitted();
         mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(deviceList.get(0).getLocation())
-                .build();
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 300));
-        mMap.setMinZoomPreference(50);
-
-        for (int i = 0; i < 6; i++) {
-            mMap.addCircle(new CircleOptions()
-                    .center(deviceList.get(i).getLocation())
-                    .fillColor(toColor[i])
-                    .radius(300)
-                    .strokeWidth(1));
-        }
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(ZOE));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ZOE, 70));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
@@ -208,18 +149,57 @@ public class SensorListViewActivity extends AppCompatActivity
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent toChart = new Intent(getApplicationContext(), CombinedChartActivity.class);
-                toChart.putExtra("Location", "  ");
+                toChart.putExtra("ID", marker.getTitle());
                 startActivity(toChart);
+            }
+        });
+
+        mMap.setOnInfoWindowLongClickListener(new GoogleMap.OnInfoWindowLongClickListener() {
+            @Override
+            public void onInfoWindowLongClick(Marker marker) {
+                String id = marker.getSnippet();
+                showDialog("Double Check", "Do you want to DEREGIST your sensor?",id);
             }
         });
     }
 
     private void addMarkersToMap() {
 
-        for(int i = 0; i < 6; i++){
-            mMap.addMarker(new MarkerOptions().position(deviceList.get(i).getLocation())
-                    .title("   AQI : " +deviceList.get(i).getAQI()+"   ")
-                    .icon(BitmapDescriptorFactory.fromBitmap(getbmp(String.valueOf(deviceList.get(i).getAQI())))));
+        for(int i = 0; i < num-1; i++){
+            if(AQIArray.get(i) == -1){
+                mMap.addMarker(new MarkerOptions().position(locationArray.get(i))
+                        .title("   Name : " +boardNameList.get(i)+"   ")
+                        .snippet(boardMACList.get(i))
+                        .icon(BitmapDescriptorFactory.fromBitmap(getbmp("XX"))));
+
+                mMap.addCircle(new CircleOptions()
+                        .center(locationArray.get(i))
+                        .radius(300)
+                        .strokeWidth(1));
+                return;
+            } else {
+                mMap.addMarker(new MarkerOptions().position(locationArray.get(i))
+                        .title("   Name : " + boardNameList.get(i) + "   ")
+                        .snippet(boardMACList.get(i))
+                        .icon(BitmapDescriptorFactory.fromBitmap(getbmp(String.valueOf(AQIArray.get(i))))));
+            }
+
+            int color;
+            int AQI = AQIArray.get(i);
+
+            if(AQI > 300) { color = 5;
+            } else if(AQI > 200) { color = 4;
+            } else if(AQI > 150) { color = 3;
+            } else if(AQI > 100) { color = 2;
+            } else if(AQI > 50) { color = 1;
+            } else { color = 0;
+            }
+
+            mMap.addCircle(new CircleOptions()
+                    .center(locationArray.get(i))
+                    .fillColor(toColor[color])
+                    .radius(300)
+                    .strokeWidth(1));
         }
     }
 
@@ -348,9 +328,9 @@ public class SensorListViewActivity extends AppCompatActivity
             String msg;                         // msg to show to the user
             String title;                       // title of Msg
             try {
-                int num = 1;
-                JSONObject json_result = new JSONObject(s);             // make JSONObject to store data from the Server
-                JSONArray jsonArray = json_result.getJSONArray("list");
+
+                // make JSONObject to store data from the Server
+                JSONArray jsonArray = new JSONArray(s);
                 JSONObject info = jsonArray.getJSONObject(0);
 
                 title = info.getString("status");
@@ -358,51 +338,114 @@ public class SensorListViewActivity extends AppCompatActivity
                 //title = json_result.getString("status");                // title will be value of s's "status"
                 // if user entered right email and first name
                 if (title.equals("ok")) {
-                    polar = info.getInt("polar");
                     listSize = info.getInt("size");
 
-                    for(; num <= polar; num++) {
-                        JSONObject jsonPolar = jsonArray.getJSONObject(num);
-                        polarList.add(new PolarInfo(jsonPolar.getString("polar_sensor_id")));
-                    }
+                    if (listSize == 0) {
+                        showDialog("No Sensor", "You don't have any sensor",null);
+                        GlobalVar.setFlag(true);
+                        return;
+                    } else
+                        num++;
 
-                    for(; num <= listSize; num++ ) {
+                    for (; num <= listSize; num++) {
                         JSONObject jsonBoard = jsonArray.getJSONObject(num);
-                        /*
-                        boardMACList.add(jsonBoard.getString("board_id"));
-                        boardNameList.add(jsonBoard.getString("board_name"));
-                        LatLng latLng = new LatLng(jsonBoard.getDouble("lat"),jsonBoard.getDouble("lng"));
+
+                        boardMACList.add(jsonBoard.getString("air_sensor_id"));
+                        boardNameList.add(jsonBoard.getString("air_sensor_name"));
+                        LatLng latLng = new LatLng(Double.valueOf(jsonBoard.getString("latitude")),
+                                Double.valueOf(jsonBoard.getString("longitude")));
                         locationArray.add(latLng);
-                        AQIArray.add(jsonBoard.getString("AQI"));
-                        */
-                        deviceList.add(new DeviceInfo(jsonBoard.getString("board_id"),
-                                jsonBoard.getString("board_name"),
-                                new LatLng(jsonBoard.getDouble("lat"), jsonBoard.getDouble("lng")),
-                                jsonBoard.getInt("AQI")));
+                        AQIArray.add(Integer.valueOf(jsonBoard.getInt("AQI")));
                     }
-                    showDialog(title,"Success");
-                    return;
+                    Toast.makeText(SensorListViewActivity.this, "all your Device", Toast.LENGTH_SHORT).show();
+                    addMarkersToMap();
                 } else {
-                    msg = "Msg : " + json_result.getString("msg");
-                    showDialog("Error", msg);
+                    msg = "Msg : "+ info.getString("msg");
+                    Toast.makeText(SensorListViewActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             } catch (JSONException e) {
                 msg = "JSON parsing Error";
-                showDialog("Error", msg);
+                Toast.makeText(SensorListViewActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
             GlobalVar.setFlag(true);
         }
-        private void showDialog(final String title, String Msg){
-            AlertDialog.Builder ad = new AlertDialog.Builder(SensorListViewActivity.this);
-            ad.setTitle(title);
-            ad.setMessage(Msg);
+    }
+    private void showDialog(final String title, String Msg, final String deviceID){
+        AlertDialog.Builder ad = new AlertDialog.Builder(SensorListViewActivity.this);
+        ad.setTitle(title);
+        ad.setMessage(Msg);
+        if(title.equals("No Sensor")) {
             ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    dialog.dismiss();
+                }
+            });
+        } else if (title.equals("Double Check")) {
+            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String url = "http://teamf-iot.calit2.net/API/sensor";
+                    String value = "function=deregister-air&token="+GlobalVar.getToken()+
+                            "&id="+deviceID;
+                    NetworkTaskListDeregi networkTaskListDeregi = new NetworkTaskListDeregi(url,value);
+                    networkTaskListDeregi.execute();
+                    dialog.dismiss();
+                }
+            });
+            ad.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
             });
-            ad.show();
+        }
+        ad.show();
+    }
+
+    // to communication with Server to check ID duplication
+    public class NetworkTaskListDeregi extends AsyncTask<Void, Void, String> {
+
+        private String url;                         // Server URL
+        private String values;                      // data passing to Server from Android
+        // constructor
+        public NetworkTaskListDeregi(String url, String values) {
+            this.url = url;
+            this.values = values;
+        }
+        //start from here
+        @Override
+        protected String doInBackground(Void... params) {
+            String result;                      // Variable to store value from Server "url"
+            RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
+            result = requestHttpURLConnection.request(url, values);     // get result from this "url"
+            return result;
+        }
+        // start after done doInBackground, result will be s in this function
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            String msg;                         // msg to show to the user
+            String title;                       // title of Msg
+            try {
+                JSONObject json_result = new JSONObject(s);             // make JSONObject to store data from the Server
+                title = json_result.getString("status");                // title will be value of s's "status"
+                // if user can change their password,
+                if (title.equals("ok")) {
+                    msg = "Deregist successfully";
+                    Toast.makeText(SensorListViewActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    GlobalVar.setFlag(true);
+                    return;
+                } else {
+                    msg = "Msg : " + json_result.getString("msg");
+                    Toast.makeText(SensorListViewActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                msg = "JSON parsing Error";
+                Toast.makeText(SensorListViewActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+            GlobalVar.setFlag(true);
         }
     }
 }

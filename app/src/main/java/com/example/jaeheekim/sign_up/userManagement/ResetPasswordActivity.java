@@ -107,6 +107,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 if (title.equals("ok")) {
                     msg = "We mailed your password";
                     showDialog(title,msg);
+                    GlobalVar.setFlag(true);
                     return;
                 } else {
                     msg = "Msg : " + json_result.getString("msg");

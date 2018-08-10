@@ -1,8 +1,11 @@
 package com.example.jaeheekim.sign_up;
 
+import android.app.Application;
+
 import com.google.android.gms.maps.model.LatLng;
 
-public class DeviceInfo {
+public class DeviceInfo extends Application {
+
     private static String ID;
     private static String name;
 

@@ -136,6 +136,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 if (title.equals("ok")) {
                     msg = "Your password is changed successfully";      // show this message then exit
                     showDialog(title, msg);
+                    GlobalVar.setFlag(true);
                     return;
                 }else if(title.equals("token_expired")){                // when passing token is expired
                     msg = "Msg : " +json_result.getString("msg");

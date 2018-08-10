@@ -56,6 +56,7 @@ public class DeleteAccountActivity extends AppCompatActivity {
                 if (title.equals("ok")) {
                     msg = "Thank you for using our Application";
                     ShowDialog(title, msg);
+                    GlobalVar.setFlag(true);
                     return;
                 } else {
                     msg = "Msg : " + json_result.getString("msg");

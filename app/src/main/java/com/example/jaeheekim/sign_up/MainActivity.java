@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,10 +41,10 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     protected TextView userName;
-    private boolean flag = true;
     private long backPressedTime = 0;    // used by onBackPressed()
     public  static Activity mainActivity;
     private ProgressBar progressBar;
+    private TextView bpm;
     private Handler handler = new Handler();
 
     public MainActivity() {
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity
         activatePolar();
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        bpm = (TextView) findViewById(R.id.bpm);
 
         new Thread(new Runnable() {
             @Override
@@ -79,6 +81,15 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void run() {
                             progressBar.setProgress(GlobalVar.getHeartRate());
+                            bpm.setText(GlobalVar.getHeartRate()+"bpm");
+                            if(GlobalVar.getHeartRate() < 60)
+                                bpm.setTextColor(Color.YELLOW);
+                            else if(GlobalVar.getHeartRate() < 80)
+                                bpm.setTextColor(Color.GREEN);
+                            else if(GlobalVar.getHeartRate() < 100)
+                                bpm.setTextColor(Color.BLUE);
+                            else
+                                bpm.setTextColor(Color.RED);
                         }
                     });
                     try {
@@ -131,7 +142,8 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();       // bye
             String url = "http://teamf-iot.calit2.net/user";
             String values = "function=sign-out&token="+GlobalVar.getToken();
-            if(flag == true) {
+            if(GlobalVar.getFlag() == true) {
+                GlobalVar.setFlag(false);
                 NetworkTaskLogOut networkTaskLogOut = new NetworkTaskLogOut(url, values);
                 networkTaskLogOut.execute();
             }
@@ -183,7 +195,7 @@ public class MainActivity extends AppCompatActivity
                 msg = "Token expire Error";
                 this.showDialog("Error", msg);
             }
-            flag = false;
+            GlobalVar.setFlag(true);
         }
         // to show the message to user
         public void showDialog(final String title, String Msg){
@@ -311,7 +323,8 @@ public class MainActivity extends AppCompatActivity
                 dialog.dismiss();
                 String url = "http://teamf-iot.calit2.net/user";
                 String values = "function=sign-out&token="+GlobalVar.getToken();
-                if(flag == true) {
+                if(GlobalVar.getFlag() == true) {
+                    GlobalVar.setFlag(false);
                     NetworkTaskLogOut networkTaskLogOut = new NetworkTaskLogOut(url, values);
                     networkTaskLogOut.execute();
                 }

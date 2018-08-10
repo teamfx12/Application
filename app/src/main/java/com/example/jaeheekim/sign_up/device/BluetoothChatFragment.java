@@ -3,9 +3,12 @@ package com.example.jaeheekim.sign_up.device;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,12 +30,24 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jaeheekim.sign_up.GlobalVar;
+import com.example.jaeheekim.sign_up.MainActivity;
 import com.example.jaeheekim.sign_up.R;
+import com.example.jaeheekim.sign_up.RequestHttpURLConnection;
+import com.example.jaeheekim.sign_up.userManagement.DeleteAccountActivity;
+import com.example.jaeheekim.sign_up.userManagement.LoginActivity;
+import com.example.jaeheekim.sign_up.userManagement.RegisterActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
 public class BluetoothChatFragment extends Fragment {
+
+    private String deviceMAC = null;
+    private String deviceName = null;
 
     private static final String TAG = "BluetoothChatFragment";
 
@@ -86,7 +101,6 @@ public class BluetoothChatFragment extends Fragment {
             activity.finish();
         }
     }
-
 
     @Override
     public void onStart() {
@@ -299,8 +313,7 @@ public class BluetoothChatFragment extends Fragment {
                     mConversationArrayAdapter.add("Me:  " + writeMessage);
                     break;
                 case Constants.MESSAGE_READ:
-                    byte[] readBuf = new byte[1024*8];
-                    readBuf = (byte[]) msg.obj;
+                    byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
@@ -308,8 +321,16 @@ public class BluetoothChatFragment extends Fragment {
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    String connectedMac = getDeviceMAC();
+                    String connectedName = getDeviceName();
+                    String url = "http://teamf-iot.calit2.net/API/sensor";
+                    String value = "function=register-air&token="+GlobalVar.getToken()
+                            +"&id="+connectedMac+"&name="+connectedName;
+                    NetworkTaskSensorRegi networkTaskSensorRegi = new NetworkTaskSensorRegi(url, value);
+                    networkTaskSensorRegi.execute();
                     if (null != activity) {
-                        Toast.makeText(activity, "Connected to "
+                        Toast.makeText(activity,
+                                "Connected to "
                                 + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -365,6 +386,35 @@ public class BluetoothChatFragment extends Fragment {
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
         mChatService.connect(device, secure);
+
+        deviceMAC = device.getAddress();
+        deviceName = device.getName();
+        if(deviceName.contains("Polar")){
+            String url = "http://teamf-iot.calit2.net/API/sensor";
+            String value = "function=register-polar&token="+GlobalVar.getToken()+
+                    "&id="+getDeviceMAC();
+            if(GlobalVar.getFlag() == true) {
+                GlobalVar.setFlag(false);
+                NetworkTaskSensorRegi networkTaskSensorRegi = new NetworkTaskSensorRegi(url, value);
+                networkTaskSensorRegi.execute();
+            }
+        }
+    }
+
+    public String getDeviceMAC(){
+        if(deviceMAC == null){
+            return "device_none";
+        }else{
+            return deviceMAC;
+        }
+
+    }
+    public String getDeviceName(){
+        if(deviceName == null){
+            return "device_none";
+        }else{
+            return deviceName;
+        }
     }
 
     @Override
@@ -394,6 +444,68 @@ public class BluetoothChatFragment extends Fragment {
             }
         }
         return false;
+    }
+
+
+    // to communication with Server
+    public class NetworkTaskSensorRegi extends AsyncTask<Void, Void, String> {
+        private String url;                     // Server URL
+        private String values;                  // Values passing to Server form Android
+        //constructor
+        public NetworkTaskSensorRegi(String url, String values) {
+            this.url = url;
+            this.values = values;
+        }
+        //start from here
+        @Override
+        protected String doInBackground(Void... params) {
+            String result;                      // Variable to store value from Server "url"
+            RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
+            result = requestHttpURLConnection.request(url, values);     // get result from this "url"
+            return result;
+        }
+        // start after done doInBackground, result will be s in this function
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            String msg;                         // msg to show to the user
+            String title;                       // title of Msg
+            try {
+                JSONObject json_result = new JSONObject(s);             // make JSONObject to store data from the Server
+                title = json_result.getString("status");                // title will be value of s's "status"
+                if (title.equals("ok")) {
+                    msg = "Your Sensor is registered";
+                    //Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                    showDialog(title, msg);
+                    GlobalVar.setFlag(true);
+                    return;
+                } else {
+                    msg = "Msg : " + json_result.getString("msg");
+                    //Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                    showDialog(title, msg);
+                }
+            } catch (JSONException e) {
+                msg = "JSON parsing Error";
+                //Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                showDialog("Error", msg);
+            }
+            GlobalVar.setFlag(true);
+        }
+    }
+
+    // use own showDialog to check user can register
+    public void showDialog(final String title, String msg){
+        AlertDialog.Builder ad = new AlertDialog.Builder(getActivity());
+        ad.setTitle(title);
+        ad.setMessage(msg);
+        ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = ad.create();
+        alertDialog.show();
     }
 
 }
