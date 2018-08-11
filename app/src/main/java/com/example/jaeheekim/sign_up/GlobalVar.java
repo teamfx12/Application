@@ -23,8 +23,8 @@ public class GlobalVar extends Application{
     private static int heartRate;
     private static int pnnPercent;
     private static boolean flag = true;
-    private static String historicalData = null;
-    private static String realTimeData = null;
+    private static String historicalData = "";
+    private static String realTimeData = "";
 
     private static int DataSize = 100;
     private Location currentBestLocation = null;
@@ -47,7 +47,7 @@ public class GlobalVar extends Application{
     public static String getHistoricalData(){ return historicalData; }
 
     public static void setRealTimeData(String realTimeData){
-        GlobalVar.realTimeData = GlobalVar.realTimeData + realTimeData;
+        GlobalVar.realTimeData = realTimeData;
     }
     public static String getRealTimeData(){ return realTimeData; }
 

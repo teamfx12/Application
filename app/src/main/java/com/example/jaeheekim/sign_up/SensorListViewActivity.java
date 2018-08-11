@@ -366,6 +366,7 @@ public class SensorListViewActivity extends AppCompatActivity
             GlobalVar.setFlag(true);
         }
     }
+
     private void showDialog(final String title, String Msg, final String deviceID){
         AlertDialog.Builder ad = new AlertDialog.Builder(SensorListViewActivity.this);
         ad.setTitle(title);

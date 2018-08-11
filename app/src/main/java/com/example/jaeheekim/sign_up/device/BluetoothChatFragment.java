@@ -288,26 +288,31 @@ public class BluetoothChatFragment extends Fragment {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
+
                     if(historicalOn) {
                         GlobalVar.setHistoricalData(readMessage);
-                    } else {
-                        GlobalVar.setRealTimeData(readMessage);
                     }
 
                     if (GlobalVar.getFlag() && !getDeviceName().equals("device_none")) {
-                        GlobalVar.setFlag(false);
-                        String url = "http://teamf-iot.calit2.net/API/transfer";
-                        String values = null;
-                        try {
-                            values = makeJSONArray(readMessage);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        if(readMessage.contains("]")) {
+                            GlobalVar.setFlag(false);
+                            String url = "http://teamf-iot.calit2.net/API/transfer";
+                            String values = null;
+                            try {
+                                if (!historicalOn) {
+                                    values = makeJSONArray(readMessage);
+                                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                                }else {
+                                    values = makeJSONArray(GlobalVar.getHistoricalData());
+                                    mConversationArrayAdapter.add(GlobalVar.getHistoricalData());
+                                }
+                                NetworkTaskTrans networkTaskTrans = new NetworkTaskTrans(url, values);
+                                networkTaskTrans.execute();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        NetworkTaskTrans networkTaskTrans = new NetworkTaskTrans(url, values);
-                        networkTaskTrans.execute();
                     }
-
-                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
@@ -380,6 +385,7 @@ public class BluetoothChatFragment extends Fragment {
             temp.put("O3_AQI", realTime.getString("O3_AQI"));
 
             resultArray.add(temp);
+            GlobalVar.setRealTimeData(resultArray.toString());
         } else {
             historicalOn = false;
             JSONArray historicalArray = new JSONArray(GlobalVar.getHistoricalData());

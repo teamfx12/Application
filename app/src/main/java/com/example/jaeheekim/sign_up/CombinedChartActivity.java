@@ -1,10 +1,19 @@
 package com.example.jaeheekim.sign_up;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -20,9 +29,15 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class CombinedChartActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CombinedChartActivity extends AppCompatActivity
+        implements AdapterView.OnItemSelectedListener {
 
     private CombinedChart mChart;
     int AQI[] = {35, 58, 124, 166, 260, 380, 225};
@@ -30,7 +45,25 @@ public class CombinedChartActivity extends AppCompatActivity {
     int O3[] = {20, 58, 124, 40, 140, 211, 152};
     int NO2[] = {34, 14, 42, 98, 260, 300, 112};
     int SO2[] = {8, 14, 60, 44, 120, 20, 225};
+
     TextView locationView;
+    private Spinner periodSpinner;
+    private Spinner pollutantSpinner;
+    List<String> listPeriod;
+    List<String> listPollutant;
+    ArrayAdapter<String> perSpinnerAdapter;
+    String period = "A week";
+    String pollutant = "All";
+    ArrayAdapter<String> polluSpinnerAdapter;
+
+    int listSize;
+
+    private static ArrayList<String> AQIArray = new ArrayList<String>();
+    private static ArrayList<String> COArray = new ArrayList<String>();
+    private static ArrayList<String> O3Array = new ArrayList<String>();
+    private static ArrayList<String> NO2Array = new ArrayList<String>();
+    private static ArrayList<String> SO2Array = new ArrayList<String>();
+    private static ArrayList<String> xValue = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +78,90 @@ public class CombinedChartActivity extends AppCompatActivity {
         mChart.setDrawGridBackground(false);
         mChart.setDrawBarShadow(true);
         mChart.setHighlightFullBarEnabled(false);
+
+        periodSpinner = (Spinner) findViewById(R.id.period);
+
+        listPeriod = new ArrayList<String>(); // List of Items
+        listPeriod.add("A day");
+        listPeriod.add("A week");
+        listPeriod.add("A month");
+
+        perSpinnerAdapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_spinner_item, listPeriod){
+            //By using this method we will define how
+            // the text appears before clicking a spinner
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                ((TextView) v).setTextColor(Color.parseColor("#E30D81"));
+                return v;
+            }
+            //By using this method we will define
+            //how the listview appears after clicking a spinner
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View v = super.getDropDownView(position, convertView,
+                        parent);
+                v.setBackgroundColor(Color.parseColor("#E30D81"));
+                ((TextView) v).setTextColor(Color.parseColor("#ffffff"));
+                return v;
+            }
+        };
+        perSpinnerAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item);
+        // Set Adapter in the spinner
+        periodSpinner.setAdapter(perSpinnerAdapter);
+
+
+        pollutantSpinner = (Spinner) findViewById(R.id.pollutant);
+
+        listPollutant = new ArrayList<String>(); // List of Items
+        listPollutant.add("All");
+        listPollutant.add("AQI");
+        listPollutant.add("CO");
+        listPollutant.add("O3");
+        listPollutant.add("SO2");
+        listPollutant.add("NO2");
+
+        polluSpinnerAdapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_spinner_item, listPollutant){
+            //By using this method we will define how
+            // the text appears before clicking a spinner
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                ((TextView) v).setTextColor(Color.parseColor("#E30D81"));
+                return v;
+            }
+            //By using this method we will define
+            //how the listview appears after clicking a spinner
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View v = super.getDropDownView(position, convertView,
+                        parent);
+                v.setBackgroundColor(Color.parseColor("#E30D81"));
+                ((TextView) v).setTextColor(Color.parseColor("#ffffff"));
+                return v;
+            }
+        };
+        polluSpinnerAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item);
+        // Set Adapter in the spinner
+        pollutantSpinner.setAdapter(polluSpinnerAdapter);
+
+        periodSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                period = adapterView.getItemAtPosition(i).toString();
+            }
+        });
+
+        pollutantSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                pollutant = adapterView.getItemAtPosition(i).toString();
+            }
+        });
 
         // draw bars behind lines
         mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
@@ -74,24 +191,55 @@ public class CombinedChartActivity extends AppCompatActivity {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return mDay[(int) value % mDay.length];
+                return xValue.get((int) value % xValue.size());
             }
         });
-
-        CombinedData data = new CombinedData();
-
-        data.setData(generateLineData());
-        data.setData(generateBarData());
-        xAxis.setAxisMaximum(data.getXMax() + 0.25f);
-
-        mChart.setData(data);
-        mChart.animateY(1000);
-        mChart.invalidate();
     }
 
-    protected String[] mDay = new String[]{
-            "28/07", "29/07", "30/07", "31/08", "01/08", "02/08", "03/08"
-    };
+    private LineData generateOnlyLineData() {
+
+        LineData d = new LineData();
+
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+
+        LineDataSet set = new LineDataSet(entries, pollutant);
+
+        if(pollutant.equals("AQI")) {
+            for (int i = 0; i < AQIArray.size(); i++) {
+                entries.add(new Entry(i, Float.valueOf(AQIArray.get(i))));
+            }
+        } else if(pollutant.equals("CO")) {
+            for (int i = 0; i < COArray.size(); i++) {
+                entries.add(new Entry(i, Float.valueOf(COArray.get(i))));
+            }
+        } else if(pollutant.equals("NO2")) {
+            for (int i = 0; i < NO2Array.size(); i++) {
+                entries.add(new Entry(i, Float.valueOf(NO2Array.get(i))));
+            }
+        } else if(pollutant.equals("SO2")) {
+            for (int i = 0; i < SO2Array.size(); i++) {
+                entries.add(new Entry(i, Float.valueOf(SO2Array.get(i))));
+            }
+        } else if(pollutant.equals("O3")) {
+            for (int i = 0; i < O3Array.size(); i++) {
+                entries.add(new Entry(i, Float.valueOf(O3Array.get(i))));
+            }
+        }
+
+        set.setColor(Color.rgb(0, 0, 255));
+        set.setLineWidth(4.5f);
+        set.setCircleColor(Color.rgb(240, 238, 70));
+        set.setCircleRadius(5f);
+        set.setFillColor(Color.rgb(240, 238, 70));
+        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setDrawValues(true);
+        set.setValueTextSize(10f);
+        set.setValueTextColor(Color.rgb(240, 238, 70));
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        d.addDataSet(set);
+
+        return d;
+    }
 
     private LineData generateLineData() {
 
@@ -99,8 +247,8 @@ public class CombinedChartActivity extends AppCompatActivity {
 
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
-        for (int i = 0; i < 7; i++) {
-            entries.add(new Entry(i+0.45f, AQI[i]));
+        for (int i = 0; i < AQIArray.size(); i++) {
+            entries.add(new Entry(i+0.45f, Float.valueOf(AQIArray.get(i))));
         }
 
         LineDataSet set = new LineDataSet(entries, "AQI");
@@ -126,11 +274,11 @@ public class CombinedChartActivity extends AppCompatActivity {
         ArrayList<BarEntry> entries3 = new ArrayList<BarEntry>();
         ArrayList<BarEntry> entries4 = new ArrayList<BarEntry>();
 
-        for (int i = 0; i < 7; i++) {
-            entries.add(new BarEntry(i, CO[i]));
-            entries2.add(new BarEntry(i, O3[i]));
-            entries3.add(new BarEntry(i, NO2[i]));
-            entries4.add(new BarEntry(i, SO2[i]));
+        for (int i = 0; i < COArray.size(); i++) {
+            entries.add(new BarEntry(i, Float.valueOf(COArray.get(i))));
+            entries2.add(new BarEntry(i, Float.valueOf(O3Array.get(i))));
+            entries3.add(new BarEntry(i, Float.valueOf(NO2Array.get(i))));
+            entries4.add(new BarEntry(i, Float.valueOf(SO2Array.get(i))));
         }
 
         BarDataSet set = new BarDataSet(entries, "CO");
@@ -170,4 +318,140 @@ public class CombinedChartActivity extends AppCompatActivity {
 
         return d;
     }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+    public void onClickSubmit(View view) {
+        CombinedData data = new CombinedData();
+
+        if(pollutant.equals("All")) {
+            data.setData(generateLineData());
+            data.setData(generateBarData());
+            mChart.getXAxis().setAxisMaximum(data.getXMax() + 0.25f);
+        } else
+            data.setData(generateOnlyLineData());
+
+        mChart.setData(data);
+        mChart.animateY(1000);
+        mChart.invalidate();
+
+        AQIArray.clear();
+        COArray.clear();
+        O3Array.clear();
+        NO2Array.clear();
+        SO2Array.clear();
+        xValue.clear();
+    }
+
+    // to communication with Server to check ID duplication
+    public class NetworkTaskListHistory extends AsyncTask<Void, Void, String> {
+
+        private String url;                         // Server URL
+        private String values;                      // data passing to Server from Android
+        // constructor
+        public NetworkTaskListHistory(String url, String values) {
+            this.url = url;
+            this.values = values;
+        }
+        // start from here
+        @Override
+        protected String doInBackground(Void... params) {
+            String result;       // Variable to store value from Server "url"
+            RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
+            result = requestHttpURLConnection.request(url, values); // get result from this "url"
+            return result;
+        }
+        // start after done doInBackground, result will be s in this function
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            String msg;                         // msg to show to the user
+            String title;                       // title of Msg
+            int num = 0;
+            try {
+                // make JSONObject to store data from the Server
+                JSONArray jsonArray = new JSONArray(s);
+                JSONObject info = jsonArray.getJSONObject(0);
+
+                title = info.getString("status");
+
+                //title = json_result.getString("status");                // title will be value of s's "status"
+                // if user entered right email and first name
+                if (title.equals("ok")) {
+                    listSize = info.getInt("size");
+
+                    if (listSize == 0) {
+                        showDialog("Nothing", "It has noting yet",null);
+                        GlobalVar.setFlag(true);
+                        return;
+                    } else
+                        num++;
+
+                    for (; num <= listSize; num++) {
+                        JSONObject jsonAir = jsonArray.getJSONObject(num);
+/*
+                        boardMACList.add(jsonAir.getString("air_sensor_id"));
+                        boardNameList.add(jsonAir.getString("air_sensor_name"));
+                        LatLng latLng = new LatLng(Double.valueOf(jsonAir.getString("latitude")),
+                                Double.valueOf(jsonAir.getString("longitude")));
+                        locationArray.add(latLng);
+                        AQIArray.add(Integer.valueOf(jsonAir.getInt("AQI")));
+                        */
+
+                    }
+                    Toast.makeText(CombinedChartActivity.this, "all new set", Toast.LENGTH_SHORT).show();
+                } else {
+                    msg = "Msg : "+ info.getString("msg");
+                    Toast.makeText(CombinedChartActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                msg = "JSON parsing Error";
+                Toast.makeText(CombinedChartActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+            GlobalVar.setFlag(true);
+        }
+    }
+
+    private void showDialog(final String title, String Msg, final String deviceID){
+        AlertDialog.Builder ad = new AlertDialog.Builder(CombinedChartActivity.this);
+        ad.setTitle(title);
+        ad.setMessage(Msg);
+        if(title.equals("No Sensor")) {
+            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    dialog.dismiss();
+                }
+            });
+        } else if (title.equals("Double Check")) {
+            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String url = "http://teamf-iot.calit2.net/API/sensor";
+                    String value = "function=deregister-air&token="+GlobalVar.getToken()+
+                            "&id="+deviceID;
+                    NetworkTaskListHistory networkTaskListDeregi = new NetworkTaskListHistory(url,value);
+                    networkTaskListDeregi.execute();
+                    dialog.dismiss();
+                }
+            });
+            ad.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+        }
+        ad.show();
+    }
+
 }
