@@ -49,6 +49,7 @@ public class CurrentLocationActivity extends AppCompatActivity
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private GoogleMap mMap;
     private Marker mSelectedMarker = null;
+    private GPSInfo gps;
 
     protected int toColor[] = {0x807fff00, 0x80ffff00, 0x80ff7f50, 0x80ff0000, 0x80b03060, 0x80a0522d};
     protected String formString[] = {"Good", "Moderate", "Unhealthy for Sensitive Groups",
@@ -84,6 +85,8 @@ public class CurrentLocationActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.current_location);
         new OnMapAndViewReadyListener(mapFragment, this);
+
+
     }
 
     @Override

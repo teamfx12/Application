@@ -1,6 +1,7 @@
 package com.example.jaeheekim.sign_up.userManagement;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.example.jaeheekim.sign_up.GlobalVar;
 import com.example.jaeheekim.sign_up.MainActivity;
@@ -22,6 +24,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     protected EditText currentPW;
     protected EditText newPW;
     protected EditText conformNewPW;
+    protected ProgressDialog nDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +33,18 @@ public class ChangePasswordActivity extends AppCompatActivity {
         currentPW = findViewById(R.id.currentPW);                   // get User input
         newPW = findViewById(R.id.newPW);
         conformNewPW = findViewById(R.id.conformNewPW);
+
+        nDialog = new ProgressDialog(ChangePasswordActivity.this);
     }
 
     public void onClickChange(View view){
+
+        nDialog.setMessage("Loading..");
+        nDialog.setTitle("Check");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(true);
+        nDialog.show();
+
         switch (view.getId()){
             case R.id.btnChange: {
                 // get data sent form user
@@ -172,6 +184,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     }
                 }
             });
+            nDialog.dismiss();
             ad.show();
         }
     }

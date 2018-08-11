@@ -1,6 +1,7 @@
 package com.example.jaeheekim.sign_up.userManagement;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -26,6 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Boolean emailChecked=false;
     private String emailCheck;
     private CheckBox checkBox;
+    protected ProgressDialog nDialog;
     //private ConstraintLayout layout;
     //protected Button Check;
     //protected Button Done;
@@ -40,6 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         checkBox = findViewById(R.id.checkBox);
+        nDialog = new ProgressDialog(RegisterActivity.this);
         //layout = (ConstraintLayout) findViewById(R.id.layout);
         //Check = (Button) findViewById(R.id.Check);
         //Done = (Button) findViewById(R.id.Done);
@@ -83,11 +86,20 @@ public class RegisterActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
+
+        nDialog.dismiss();
         ad.show();
     }
 
     // when user touch ID Check bottom
     public void onClickCheck(View view){
+
+        nDialog.setMessage("Loading..");
+        nDialog.setTitle("Check");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(true);
+        nDialog.show();
+
         switch (view.getId()) {
             case R.id.btnCheck: {
                 String function = "function=mail-check&";
@@ -154,6 +166,13 @@ public class RegisterActivity extends AppCompatActivity {
 
     // when user touch Done bottom
     public void onClickRegister(View v) {
+
+        nDialog.setMessage("Loading..");
+        nDialog.setTitle("Check");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(true);
+        nDialog.show();
+
         switch (v.getId()) {
             case R.id.btnDone: {
                 // get data from user
@@ -272,6 +291,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             });
             ad.show();
+            nDialog.dismiss();
         }
     }
 }

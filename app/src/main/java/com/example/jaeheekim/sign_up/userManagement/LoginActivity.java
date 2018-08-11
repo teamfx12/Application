@@ -1,6 +1,7 @@
 package com.example.jaeheekim.sign_up.userManagement;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -24,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
 
     protected EditText textEmail;
     protected EditText textPassword;
+    protected ProgressDialog nDialog;
     //protected Button Sign_in;
     //protected InputMethodManager imm;
     //protected ConstraintLayout layout;
@@ -34,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_log_in);                            // content connection with activity_log_in
         textEmail = findViewById(R.id.textEmail);                            // get User input
         textPassword = findViewById(R.id.textPassword);
+        nDialog = new ProgressDialog(LoginActivity.this);
         //layout = (ConstraintLayout)findViewById(R.id.layout);
         //imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         //Sign_in = (Button)findViewById(R.id.Sign_in);
@@ -66,6 +69,13 @@ public class LoginActivity extends AppCompatActivity {
     }*/
 
     public void onClickLogin(View v) {
+
+        nDialog.setMessage("Loading..");
+        nDialog.setTitle("Check");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(true);
+        nDialog.show();
+
         switch (v.getId()) {
             case R.id.btnSignIn: {
                 // get data sent form user
@@ -196,6 +206,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             });
+            nDialog.dismiss();
             ad.show();
         }
     }

@@ -14,28 +14,26 @@
             android:title="Finding Route" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/heart"
+            android:icon="@drawable/heart2"
             android:title="Heart rate" />
         <item
             android:id="@+id/nav_history"
             android:icon="@drawable/history"
             android:title="History" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/history"
-            android:title="Device" />
+
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Sensor">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+            android:id="@+id/nav_manage"
+            android:icon="@drawable/bluetooth"
+            android:title="Device" />
+
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_share"
+                android:icon="@drawable/list"
+                android:title="Sensor List" />
         </menu>
     </item>
 

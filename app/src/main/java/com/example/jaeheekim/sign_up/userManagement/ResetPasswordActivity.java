@@ -1,6 +1,7 @@
 package com.example.jaeheekim.sign_up.userManagement;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.example.jaeheekim.sign_up.GlobalVar;
 import com.example.jaeheekim.sign_up.R;
@@ -20,6 +22,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     protected EditText textFname;
     protected EditText textEmail;
+    protected ProgressDialog nDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +30,19 @@ public class ResetPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reset_password);                // content connection with activity_register
         textFname=findViewById(R.id.firstName);                          // get user input
         textEmail=findViewById(R.id.email);
+
+        nDialog = new ProgressDialog(ResetPasswordActivity.this);
     }
 
     // when user touch Find bottom
     public void onClickReset(View view){
+
+        nDialog.setMessage("Loading..");
+        nDialog.setTitle("Checking");
+        nDialog.setIndeterminate(false);
+        nDialog.setCancelable(true);
+        nDialog.show();
+
         switch (view.getId()){
             case R.id.btnResetPassword: {
                 // get data sent form user
@@ -71,6 +83,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     GlobalVar.setFlag(false);
                     NetworkTaskReset networkTaskReset = new NetworkTaskReset(url, values);
                     networkTaskReset.execute();
+
+
                 }
             }
         }
@@ -135,6 +149,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     }
                 }
             });
+            nDialog.dismiss();
             ad.show();
         }
     }

@@ -34,17 +34,10 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/btnStart"
+            android:id="@+id/btnHistory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="start" />
-
-        <Button
-            android:id="@+id/btnStop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="stop" />
-
+            android:text="History" />
     </LinearLayout>
 
 </LinearLayout>

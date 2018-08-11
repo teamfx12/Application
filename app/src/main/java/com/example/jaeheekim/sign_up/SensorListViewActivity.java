@@ -19,15 +19,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jaeheekim.sign_up.device.DeviceListActivity;
-import com.example.jaeheekim.sign_up.userManagement.LoginActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,7 +31,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -87,7 +82,7 @@ public class SensorListViewActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar_list);
         setSupportActionBar(toolbar);
         setTitle("Sensor List");
-        toolbar.setSubtitle("Near by you");
+        toolbar.setSubtitle("you've got");
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setSubtitleTextColor(Color.WHITE);
 
@@ -101,7 +96,7 @@ public class SensorListViewActivity extends AppCompatActivity
 
         mMap = googleMap;
 
-        if(GlobalVar.getFlag() == true) {
+        if(GlobalVar.getFlag()) {
             GlobalVar.setFlag(false);
             String url = "http://teamf-iot.calit2.net/API/sensor";
             String msg = "function=list&token=" + GlobalVar.getToken();
@@ -166,7 +161,9 @@ public class SensorListViewActivity extends AppCompatActivity
     private void addMarkersToMap() {
 
         for(int i = 0; i < num-1; i++){
-            if(AQIArray.get(i) == -1){
+            if(locationArray.get(i).longitude == -1){
+                continue;
+            }else if(AQIArray.get(i) == -1){
                 mMap.addMarker(new MarkerOptions().position(locationArray.get(i))
                         .title("   Name : " +boardNameList.get(i)+"   ")
                         .snippet(boardMACList.get(i))
@@ -176,30 +173,29 @@ public class SensorListViewActivity extends AppCompatActivity
                         .center(locationArray.get(i))
                         .radius(300)
                         .strokeWidth(1));
-                return;
             } else {
                 mMap.addMarker(new MarkerOptions().position(locationArray.get(i))
                         .title("   Name : " + boardNameList.get(i) + "   ")
                         .snippet(boardMACList.get(i))
                         .icon(BitmapDescriptorFactory.fromBitmap(getbmp(String.valueOf(AQIArray.get(i))))));
+
+                int color;
+                int AQI = AQIArray.get(i);
+
+                if(AQI > 300) { color = 5;
+                } else if(AQI > 200) { color = 4;
+                } else if(AQI > 150) { color = 3;
+                } else if(AQI > 100) { color = 2;
+                } else if(AQI > 50) { color = 1;
+                } else { color = 0;
+                }
+
+                mMap.addCircle(new CircleOptions()
+                        .center(locationArray.get(i))
+                        .fillColor(toColor[color])
+                        .radius(300)
+                        .strokeWidth(1));
             }
-
-            int color;
-            int AQI = AQIArray.get(i);
-
-            if(AQI > 300) { color = 5;
-            } else if(AQI > 200) { color = 4;
-            } else if(AQI > 150) { color = 3;
-            } else if(AQI > 100) { color = 2;
-            } else if(AQI > 50) { color = 1;
-            } else { color = 0;
-            }
-
-            mMap.addCircle(new CircleOptions()
-                    .center(locationArray.get(i))
-                    .fillColor(toColor[color])
-                    .radius(300)
-                    .strokeWidth(1));
         }
     }
 

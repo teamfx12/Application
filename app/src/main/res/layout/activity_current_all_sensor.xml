@@ -9,7 +9,7 @@
     tools:context=".CurrentAllSensorActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_current"
+        android:id="@+id/toolbar_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -25,7 +25,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_current"/>
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_list"/>
 
     <ImageView
         android:id="@+id/conditionLevel"

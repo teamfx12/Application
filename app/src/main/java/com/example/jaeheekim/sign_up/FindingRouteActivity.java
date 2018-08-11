@@ -49,6 +49,7 @@ public class FindingRouteActivity extends AppCompatActivity
     private GoogleMap mMap;
     ArrayList<LatLng> MarkerPoints;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private String mode = "&mode=w";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class FindingRouteActivity extends AppCompatActivity
         Toolbar tb = findViewById(R.id.toolbar_find_route);
         setSupportActionBar(tb);
         setTitle("Find Clean Path");
-        tb.setSubtitle("WOFA");
+        tb.setSubtitle("Click starting point and arrival point");
         tb.setTitleTextColor(Color.WHITE);
         tb.setSubtitleTextColor(Color.WHITE);
 
@@ -90,7 +91,7 @@ public class FindingRouteActivity extends AppCompatActivity
 
         // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/" +
-                output + "?" + parameters + "&mode=b";
+                output + "?" + parameters + mode;
 
 
         return url;
@@ -328,10 +329,13 @@ public class FindingRouteActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch ((item.getItemId())) {
             case 1:
-                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                mode = "&mode=w";
                 return true;
             case 2:
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                mode = "&mode=b";
+                return true;
+            case 3:
+                mode = "&mode=d";
                 return true;
         }
         return false;
@@ -339,8 +343,9 @@ public class FindingRouteActivity extends AppCompatActivity
 
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(0, 1, 0, "Type : HYBRID");
-        menu.add(0, 2, 0, "Type : NORMAL");
+        menu.add(0, 1, 0, "Mode : Walk");
+        menu.add(0, 2, 0, "Mode : Cycle");
+        menu.add(0, 3, 0, "Mode : Drive");
         return true;
     }
 

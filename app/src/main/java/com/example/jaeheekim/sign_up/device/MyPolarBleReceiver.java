@@ -30,14 +30,17 @@ public class MyPolarBleReceiver extends BroadcastReceiver {
             String data = intent.getStringExtra(EXTRA_DATA);
             StringTokenizer tokens = new StringTokenizer(data, ";");
             int heartRate = Integer.parseInt(tokens.nextToken());
-            GlobalVar.setHeartRate(heartRate);
             int pnnPercentage = Integer.parseInt(tokens.nextToken());
+            GlobalVar.setHeartRate(heartRate, pnnPercentage);
             int pnnCount = Integer.parseInt(tokens.nextToken());
             int rrThreshold = Integer.parseInt(tokens.nextToken());
             int totalNN = Integer.parseInt(tokens.nextToken());
             int lastRRvalue = Integer.parseInt(tokens.nextToken());
             String sessionId = tokens.nextToken();
-            Log.w(this.getClass().getName(), "####Received heartRate: " +heartRate+" pnnPercentage: "+pnnPercentage+" pnnCount: "+pnnCount+" rrThreshold: "+rrThreshold+" totalNN: "+totalNN+" lastRRvalue: "+lastRRvalue+" sessionId: "+sessionId);
+            Log.w(this.getClass().getName(), "####Received heartRate: " +heartRate+
+                    " pnnPercentage: "+pnnPercentage+" pnnCount: "+pnnCount+
+                    " rrThreshold: "+rrThreshold+" totalNN: "+totalNN+
+                    " lastRRvalue: "+lastRRvalue+" sessionId: "+sessionId);
         }
     }
 }

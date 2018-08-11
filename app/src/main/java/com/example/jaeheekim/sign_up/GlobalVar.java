@@ -3,7 +3,10 @@ package com.example.jaeheekim.sign_up;
 import android.annotation.TargetApi;
 import android.app.Application;
 import android.icu.text.SimpleDateFormat;
+import android.location.Location;
 import android.os.Build;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -18,8 +21,14 @@ public class GlobalVar extends Application{
     private static Date tokenExpire;
     private static Date currentDate;
     private static int heartRate;
-    private static int maxHeartRate = 0;
+    private static int pnnPercent;
     private static boolean flag = true;
+    private static String historicalData = null;
+    private static String realTimeData = null;
+
+    private static int DataSize = 100;
+    private Location currentBestLocation = null;
+    private static LatLng mLocation;
 
     @Override
     public void onCreate(){
@@ -32,12 +41,30 @@ public class GlobalVar extends Application{
         super.onTerminate();
     }
 
+    public static void setHistoricalData(String historicalData){
+        GlobalVar.historicalData = GlobalVar.historicalData + historicalData;
+    }
+    public static String getHistoricalData(){ return historicalData; }
+
+    public static void setRealTimeData(String realTimeData){
+        GlobalVar.realTimeData = GlobalVar.realTimeData + realTimeData;
+    }
+    public static String getRealTimeData(){ return realTimeData; }
+
     public static String getToken(){
         return token;
     }
 
     public static void setToken(String token){
         GlobalVar.token = token;
+    }
+
+    public static LatLng getmLocation(){
+        return mLocation;
+    }
+
+    public static void setmLocation(LatLng location){
+        GlobalVar.mLocation = location;
     }
 
     public static String getEmail(){
@@ -76,22 +103,17 @@ public class GlobalVar extends Application{
         return heartRate;
     }
 
-    public static void setHeartRate(int heartRate){
+    public static void setHeartRate(int heartRate, int pnnPercent){
         GlobalVar.heartRate = heartRate;
-        if(GlobalVar.heartRate > GlobalVar.maxHeartRate)
-            GlobalVar.maxHeartRate = GlobalVar.heartRate;
+        GlobalVar.pnnPercent =  pnnPercent;
     }
 
-    public static int getMaxHeartRate() { return maxHeartRate;}
+    public static int getPnnPercent() { return pnnPercent;}
 
     public static void setTokenExpire(Date tokenExpire) { GlobalVar.tokenExpire = tokenExpire; }
 
-    @TargetApi(Build.VERSION_CODES.N)
-    public static  boolean isTokenExpired() throws ParseException {
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        currentDate = format.parse(format.format(calendar.getTime()));
-        if(currentDate.before(GlobalVar.tokenExpire))
+    public static boolean isTokenExpired() throws ParseException {
+        if(currentDate().before(GlobalVar.tokenExpire))
             return true;
         else
             return false;
@@ -99,10 +121,17 @@ public class GlobalVar extends Application{
 
     @TargetApi(Build.VERSION_CODES.N)
     public static void makeTokenExpired() throws ParseException {
+        currentDate = currentDate();
+        GlobalVar.tokenExpire = currentDate;
+        GlobalVar.token = "";
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    public static Date currentDate() throws ParseException {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         currentDate = format.parse(format.format(calendar.getTime()));
-        GlobalVar.tokenExpire = currentDate;
-        GlobalVar.token = "";
+
+        return currentDate;
     }
 }

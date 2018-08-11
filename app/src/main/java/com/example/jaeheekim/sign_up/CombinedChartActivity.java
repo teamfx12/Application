@@ -1,9 +1,8 @@
 package com.example.jaeheekim.sign_up;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -26,11 +25,11 @@ import java.util.ArrayList;
 public class CombinedChartActivity extends AppCompatActivity {
 
     private CombinedChart mChart;
-    int AQI[] = {35, 58, 124, 166, 260, 380};
-    int CO[] = {35, 20, 2, 166, 255, 380};
-    int O3[] = {20, 58, 124, 40, 140, 211};
-    int NO2[] = {34, 14, 42, 98, 260, 300};
-    int SO2[] = {8, 14, 60, 44, 120, 20};
+    int AQI[] = {35, 58, 124, 166, 260, 380, 225};
+    int CO[] = {35, 20, 2, 166, 255, 380, 72};
+    int O3[] = {20, 58, 124, 40, 140, 211, 152};
+    int NO2[] = {34, 14, 42, 98, 260, 300, 112};
+    int SO2[] = {8, 14, 60, 44, 120, 20, 225};
     TextView locationView;
 
     @Override
@@ -100,7 +99,7 @@ public class CombinedChartActivity extends AppCompatActivity {
 
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             entries.add(new Entry(i+0.45f, AQI[i]));
         }
 
@@ -127,7 +126,7 @@ public class CombinedChartActivity extends AppCompatActivity {
         ArrayList<BarEntry> entries3 = new ArrayList<BarEntry>();
         ArrayList<BarEntry> entries4 = new ArrayList<BarEntry>();
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             entries.add(new BarEntry(i, CO[i]));
             entries2.add(new BarEntry(i, O3[i]));
             entries3.add(new BarEntry(i, NO2[i]));

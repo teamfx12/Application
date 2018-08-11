@@ -1,8 +1,9 @@
 package com.example.jaeheekim.sign_up;
 
 import android.Manifest;
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,17 +11,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,15 +28,17 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import static java.security.AccessController.getContext;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class CurrentAllSensorActivity extends AppCompatActivity
         implements OnMapReadyCallback,
@@ -49,35 +49,32 @@ public class CurrentAllSensorActivity extends AppCompatActivity
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private GoogleMap mMap;
     private Marker mSelectedMarker = null;
+    private int listSize = 0;
 
     protected int toColor[] = {0x807fff00, 0x80ffff00, 0x80ff7f50, 0x80ff0000, 0x80b03060, 0x80a0522d};
     protected String formString[] = {"Good", "Moderate", "Unhealthy for Sensitive Groups",
             "Unhealthy", "Very Unhealthy", "Hazardous"};
 
-    private static final LatLng BRISBANE = new LatLng(32.890793 , -117.244088);
-    private static final LatLng MELBOURNE = new LatLng(32.891521 , -117.237196);
-    private static final LatLng SYDNEY = new LatLng(32.888096 , -117.235407);
-    private static final LatLng ADELAIDE = new LatLng(32.882791 , -117.237879);
-    private static final LatLng PERTH = new LatLng(32.881912 , -117.243562);
     private static final LatLng ZOE = new LatLng(32.886615 , -117.241287);
 
-    static final LatLng locationArray[] = {BRISBANE, MELBOURNE, SYDNEY, ADELAIDE, PERTH, ZOE};
+    private static ArrayList<LatLng> locationArray = new ArrayList<LatLng>();
 
-    String AQI[] = new String[] {"35","58","124","166","260","380"};
-    String CO[] = new String[] {"35","20","2","166","255","380"};
-    String O3[] = new String[] {"20","58","124","40","140","211"};
-    String NO2[] = new String[] {"34","14","42","98","260","300"};
-    String SO2[] = new String[] {"8", "14", "60", "44", "120", "20"};
+    private static ArrayList<Integer> AQIArray = new ArrayList<Integer>();
+
+    private static ArrayList<String> boardMACList = new ArrayList<String>();
+    private static ArrayList<String> boardNameList = new ArrayList<String>();
+
+    int num = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_current_all_sensor);
 
-        Toolbar toolbar = findViewById(R.id.toolbar_current);
+        Toolbar toolbar = findViewById(R.id.toolbar_list);
         setSupportActionBar(toolbar);
-        setTitle("Current Air Condition");
-        toolbar.setSubtitle("Your Location");
+        setTitle("Current Air condition");
+        toolbar.setSubtitle("near by you");
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setSubtitleTextColor(Color.WHITE);
 
@@ -87,55 +84,28 @@ public class CurrentAllSensorActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch ((item.getItemId())) {
-            case 1:
-                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                return true;
-            case 2:
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                return true;
-        }
-        return false;
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        menu.add(0, 1, 0, "Type : HYBRID");
-        menu.add(0, 2, 0, "Type : NORMAL");
-        return true;
-    }
-
-    @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
 
-        addMarkersToMap();
+        if (GlobalVar.getFlag()) {
+            GlobalVar.setFlag(false);
+            String url = "http://teamf-iot.calit2.net/API/sensor";
+            String msg = "function=list-all&token=" + GlobalVar.getToken()
+                    + "&latitude=" + GlobalVar.getmLocation().latitude
+                    + "&longitude=" + GlobalVar.getmLocation().longitude;
+            NetworkTaskListRequest networkTaskListRequest = new NetworkTaskListRequest(url, msg);
+            networkTaskListRequest.execute();
+        }
 
         enableMyLocationIfPermitted();
         mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(PERTH)
-                .include(SYDNEY)
-                .include(ADELAIDE)
-                .include(BRISBANE)
-                .include(MELBOURNE)
-                .include(ZOE)
-                .build();
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 300));
-        mMap.setMinZoomPreference(5);
-
-        for (int i = 0; i < 6; i++) {
-            mMap.addCircle(new CircleOptions()
-                    .center(locationArray[i])
-                    .fillColor(toColor[i])
-                    .radius(300)
-                    .strokeWidth(1));
-        }
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(ZOE));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ZOE, 70));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
@@ -158,12 +128,7 @@ public class CurrentAllSensorActivity extends AppCompatActivity
                 title.setTypeface(null, Typeface.BOLD);
                 title.setText(marker.getTitle());
 
-                TextView snippet = new TextView(mContext);
-                snippet.setTextColor(Color.GRAY);
-                snippet.setText(marker.getSnippet());
-
                 info.addView(title);
-                info.addView(snippet);
 
                 return info;
             }
@@ -173,7 +138,7 @@ public class CurrentAllSensorActivity extends AppCompatActivity
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent toChart = new Intent(getApplicationContext(), CombinedChartActivity.class);
-                toChart.putExtra("Location", "  ");
+                toChart.putExtra("ID", marker.getSnippet());
                 startActivity(toChart);
             }
         });
@@ -181,10 +146,32 @@ public class CurrentAllSensorActivity extends AppCompatActivity
 
     private void addMarkersToMap() {
 
-        for(int i = 0; i < 6; i++){
-            mMap.addMarker(new MarkerOptions().position(locationArray[i]).title("   AQI : "+AQI[i]+"   ")
-                    .snippet("  CO2 :  "+CO[i]+"\n  O3  :  "+O3[i]+"\n  NO2 :  "+NO2[i]+"\n  SO2 :  "+SO2[i])
-                    .icon(BitmapDescriptorFactory.fromBitmap(getbmp(AQI[i]))));
+        for(int i = 0; i < num-1; i++){
+            if(AQIArray.get(i) == -1){
+                continue;
+            } else {
+                mMap.addMarker(new MarkerOptions().position(locationArray.get(i))
+                        .title("   Name : " + boardNameList.get(i) + "   ")
+                        .snippet(boardMACList.get(i))
+                        .icon(BitmapDescriptorFactory.fromBitmap(getbmp(String.valueOf(AQIArray.get(i))))));
+
+                int color;
+                int AQI = AQIArray.get(i);
+
+                if(AQI > 300) { color = 5;
+                } else if(AQI > 200) { color = 4;
+                } else if(AQI > 150) { color = 3;
+                } else if(AQI > 100) { color = 2;
+                } else if(AQI > 50) { color = 1;
+                } else { color = 0;
+                }
+
+                mMap.addCircle(new CircleOptions()
+                        .center(locationArray.get(i))
+                        .fillColor(toColor[color])
+                        .radius(300)
+                        .strokeWidth(1));
+            }
         }
     }
 
@@ -285,5 +272,88 @@ public class CurrentAllSensorActivity extends AppCompatActivity
     @Override
     public View getInfoContents(Marker marker) {
         return null;
+    }
+
+    // to communication with Server to check ID duplication
+    public class NetworkTaskListRequest extends AsyncTask<Void, Void, String> {
+
+        private String url;                         // Server URL
+        private String values;                      // data passing to Server from Android
+        // constructor
+        public NetworkTaskListRequest(String url, String values) {
+            this.url = url;
+            this.values = values;
+        }
+        // start from here
+        @Override
+        protected String doInBackground(Void... params) {
+            String result;       // Variable to store value from Server "url"
+            RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
+            result = requestHttpURLConnection.request(url, values); // get result from this "url"
+            return result;
+        }
+        // start after done doInBackground, result will be s in this function
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            String msg;                         // msg to show to the user
+            String title;                       // title of Msg
+            try {
+
+                // make JSONObject to store data from the Server
+                JSONArray jsonArray = new JSONArray(s);
+                JSONObject info = jsonArray.getJSONObject(0);
+
+                title = info.getString("status");
+
+                //title = json_result.getString("status");                // title will be value of s's "status"
+                // if user entered right email and first name
+                if (title.equals("ok")) {
+                    listSize = info.getInt("size");
+
+                    if (listSize == 0) {
+                        showDialog("No Sensor", "We don't have any sensor near by you sorry");
+                        GlobalVar.setFlag(true);
+                        return;
+                    } else
+                        num++;
+
+                    for (; num <= listSize; num++) {
+                        JSONObject jsonBoard = jsonArray.getJSONObject(num);
+
+                        boardMACList.add(jsonBoard.getString("air_sensor_id"));
+                        boardNameList.add(jsonBoard.getString("air_sensor_name"));
+                        LatLng latLng = new LatLng(Double.valueOf(jsonBoard.getString("latitude")),
+                                Double.valueOf(jsonBoard.getString("longitude")));
+                        locationArray.add(latLng);
+                        AQIArray.add(Integer.valueOf(jsonBoard.getInt("AQI")));
+                    }
+                    Toast.makeText(CurrentAllSensorActivity.this, "all Device we have near by you", Toast.LENGTH_SHORT).show();
+                    addMarkersToMap();
+                } else {
+                    msg = "Msg : "+ info.getString("msg");
+                    Toast.makeText(CurrentAllSensorActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                msg = "JSON parsing Error";
+                Toast.makeText(CurrentAllSensorActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+            GlobalVar.setFlag(true);
+        }
+    }
+    private void showDialog(final String title, String Msg){
+        AlertDialog.Builder ad = new AlertDialog.Builder(CurrentAllSensorActivity.this);
+        ad.setTitle(title);
+        ad.setMessage(Msg);
+        if(title.equals("No Sensor")) {
+            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    dialog.dismiss();
+                }
+            });
+        }
+        ad.show();
     }
 }

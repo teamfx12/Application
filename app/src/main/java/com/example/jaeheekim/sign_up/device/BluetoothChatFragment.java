@@ -9,37 +9,34 @@ import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jaeheekim.sign_up.GlobalVar;
-import com.example.jaeheekim.sign_up.MainActivity;
 import com.example.jaeheekim.sign_up.R;
 import com.example.jaeheekim.sign_up.RequestHttpURLConnection;
-import com.example.jaeheekim.sign_up.userManagement.DeleteAccountActivity;
-import com.example.jaeheekim.sign_up.userManagement.LoginActivity;
-import com.example.jaeheekim.sign_up.userManagement.RegisterActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
@@ -59,8 +56,7 @@ public class BluetoothChatFragment extends Fragment {
     // Layout Views
     private ListView mConversationView;
     //private EditText mOutEditText;
-    private Button mStartButton;
-    private Button mStoptButton;
+    private Button mHistoryButton;
 
     /**
      * Name of the connected device
@@ -86,6 +82,8 @@ public class BluetoothChatFragment extends Fragment {
      * Member object for the chat services
      */
     private BluetoothChatService mChatService = null;
+
+    private boolean historicalOn = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -150,8 +148,7 @@ public class BluetoothChatFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mConversationView = (ListView) view.findViewById(R.id.in);
         //mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
-        mStartButton = (Button) view.findViewById(R.id.btnStart);
-        mStoptButton = (Button) view.findViewById(R.id.btnStop);
+        mHistoryButton = (Button) view.findViewById(R.id.btnHistory);
     }
 
     /**
@@ -167,25 +164,13 @@ public class BluetoothChatFragment extends Fragment {
         //mOutEditText.setOnEditorActionListener(mWriteListener);
 
         // Initialize the send button with a listener that for click events
-        mStartButton.setOnClickListener(new View.OnClickListener() {
+        mHistoryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Send a message using content of the edit text widget
                 View view = getView();
                 if (null != view) {
-                    //TextView textView = (TextView) view.findViewById(R.id.edit_text_out);
-                    //String message = textView.getText().toString();
                     sendMessage("start");
-                }
-            }
-        });
-        mStoptButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                View view = getView();
-                if (null != view) {
-                    //TextView textView = (TextView) view.findViewById(R.id.edit_text_out);
-                    //String message = textView.getText().toString();
-                    sendMessage("stop");
+                    historicalOn = true;
                 }
             }
         });
@@ -234,21 +219,6 @@ public class BluetoothChatFragment extends Fragment {
     }
 
     /**
-     * The action listener for the EditText widget, to listen for the return key
-     */
-    private TextView.OnEditorActionListener mWriteListener
-            = new TextView.OnEditorActionListener() {
-        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-            // If the action is a key-up event on the return key, send the message
-            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                String message = view.getText().toString();
-                sendMessage("start");
-            }
-            return true;
-        }
-    };
-
-    /**
      * Updates the status on the action bar.
      *
      * @param resId a string resource ID
@@ -286,6 +256,7 @@ public class BluetoothChatFragment extends Fragment {
      * The Handler that gets information back from the BluetoothChatService
      */
     private final Handler mHandler = new Handler() {
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @SuppressLint("StringFormatInvalid")
         @Override
         public void handleMessage(Message msg) {
@@ -311,23 +282,48 @@ public class BluetoothChatFragment extends Fragment {
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
                     mConversationArrayAdapter.add("Me:  " + writeMessage);
+                    historicalOn = true;
                     break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
+                    if(historicalOn) {
+                        GlobalVar.setHistoricalData(readMessage);
+                    } else {
+                        GlobalVar.setRealTimeData(readMessage);
+                    }
+
+                    if (GlobalVar.getFlag() && !getDeviceName().equals("device_none")) {
+                        GlobalVar.setFlag(false);
+                        String url = "http://teamf-iot.calit2.net/API/transfer";
+                        String values = null;
+                        try {
+                            values = makeJSONArray(readMessage);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        NetworkTaskTrans networkTaskTrans = new NetworkTaskTrans(url, values);
+                        networkTaskTrans.execute();
+                    }
+
                     mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    String connectedMac = getDeviceMAC();
-                    String connectedName = getDeviceName();
+
                     String url = "http://teamf-iot.calit2.net/API/sensor";
-                    String value = "function=register-air&token="+GlobalVar.getToken()
-                            +"&id="+connectedMac+"&name="+connectedName;
-                    NetworkTaskSensorRegi networkTaskSensorRegi = new NetworkTaskSensorRegi(url, value);
-                    networkTaskSensorRegi.execute();
+                    String value = "function=register-air&token=" + GlobalVar.getToken()
+                                + "&id=" + getDeviceMAC() + "&name=" + getDeviceName()
+                                + "&latitude=" + GlobalVar.getmLocation().latitude
+                                + "&longitude=" + GlobalVar.getmLocation().longitude;
+
+                    if(GlobalVar.getFlag()&&!getDeviceName().equals("device_none")){
+                        GlobalVar.setFlag(false);
+                        NetworkTaskSensorRegi networkTaskSensorRegi = new NetworkTaskSensorRegi(url, value);
+                        networkTaskSensorRegi.execute();
+                    }
                     if (null != activity) {
                         Toast.makeText(activity,
                                 "Connected to "
@@ -343,6 +339,75 @@ public class BluetoothChatFragment extends Fragment {
             }
         }
     };
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private String makeJSONArray(String readMessage) throws JSONException {
+
+        JSONArray jsonArray = new JSONArray(readMessage);
+
+        JSONObject info = new JSONObject();
+        try {
+            info.put("function","transfer_air");
+            info.put("token",GlobalVar.getToken());
+            info.put("latitude",String.valueOf(GlobalVar.getmLocation().latitude));
+            info.put("longitude",String.valueOf(GlobalVar.getmLocation().longitude));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject info_sen = jsonArray.getJSONObject(0);
+
+        int size = info_sen.getInt("size");
+        int type = info_sen.getInt("type");
+
+        ArrayList<JSONObject> resultArray = new ArrayList<JSONObject>();
+        resultArray.add(info);
+        JSONObject temp = new JSONObject();
+
+        if(type == 1){
+            JSONObject realTime = jsonArray.getJSONObject(1);
+
+            temp.put("id", realTime.getString("MAC"));
+            temp.put("CTIME", String.valueOf(realTime.getString("CTIME")));
+            temp.put("TEMP", realTime.getString("TEMP"));
+            temp.put("CO", realTime.getString("CO"));
+            temp.put("SO2", realTime.getString("SO2"));
+            temp.put("NO2", realTime.getString("NO2"));
+            temp.put("O3", realTime.getString("O3"));
+            temp.put("CO_AQI", realTime.getString("CO_AQI"));
+            temp.put("SO2_AQI", realTime.getString("SO2_AQI"));
+            temp.put("NO2_AQI", realTime.getString("NO2_AQI"));
+            temp.put("O3_AQI", realTime.getString("O3_AQI"));
+
+            resultArray.add(temp);
+        } else {
+            historicalOn = false;
+            JSONArray historicalArray = new JSONArray(GlobalVar.getHistoricalData());
+
+            JSONObject historical = new JSONObject();
+            for(int i = 1; i < size+1; i++){
+                historical = historicalArray.getJSONObject(i);
+
+                temp.put("id", historical.getString("MAC"));
+                temp.put("CTIME", String.valueOf(historical.getString("CTIME")));
+                temp.put("TEMP", historical.getString("TEMP"));
+                temp.put("CO", historical.getString("CO"));
+                temp.put("SO2", historical.getString("SO2"));
+                temp.put("NO2", historical.getString("NO2"));
+                temp.put("O3", historical.getString("O3"));
+                temp.put("CO_AQI", historical.getString("CO_AQI"));
+                temp.put("SO2_AQI", historical.getString("SO2_AQI"));
+                temp.put("NO2_AQI", historical.getString("NO2_AQI"));
+                temp.put("O3_AQI", historical.getString("O3_AQI"));
+
+                resultArray.add(temp);
+            }
+        }
+
+        String jsonStr = resultArray.toString();
+
+        return jsonStr;
+    }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -389,16 +454,6 @@ public class BluetoothChatFragment extends Fragment {
 
         deviceMAC = device.getAddress();
         deviceName = device.getName();
-        if(deviceName.contains("Polar")){
-            String url = "http://teamf-iot.calit2.net/API/sensor";
-            String value = "function=register-polar&token="+GlobalVar.getToken()+
-                    "&id="+getDeviceMAC();
-            if(GlobalVar.getFlag() == true) {
-                GlobalVar.setFlag(false);
-                NetworkTaskSensorRegi networkTaskSensorRegi = new NetworkTaskSensorRegi(url, value);
-                networkTaskSensorRegi.execute();
-            }
-        }
     }
 
     public String getDeviceMAC(){
@@ -446,7 +501,6 @@ public class BluetoothChatFragment extends Fragment {
         return false;
     }
 
-
     // to communication with Server
     public class NetworkTaskSensorRegi extends AsyncTask<Void, Void, String> {
         private String url;                     // Server URL
@@ -493,6 +547,52 @@ public class BluetoothChatFragment extends Fragment {
         }
     }
 
+    // to communication with Server
+    public class NetworkTaskTrans extends AsyncTask<Void, Void, String> {
+        private String url;                     // Server URL
+        private String values;                  // Values passing to Server form Android
+        //constructor
+        public NetworkTaskTrans(String url, String values) {
+            this.url = url;
+            this.values = values;
+        }
+        //start from here
+        @Override
+        protected String doInBackground(Void... params) {
+            String result;                      // Variable to store value from Server "url"
+            RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
+            result = requestHttpURLConnection.request(url, values);     // get result from this "url"
+            return result;
+        }
+        // start after done doInBackground, result will be s in this function
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            String msg;                         // msg to show to the user
+            String title;                       // title of Msg
+            try {
+                JSONObject json_result = new JSONObject(s);             // make JSONObject to store data from the Server
+                title = json_result.getString("status");                // title will be value of s's "status"
+                if (title.equals("ok")) {
+                    msg = "Successfully passed";
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                    //showDialog(title, msg);
+                    GlobalVar.setFlag(true);
+                    return;
+                } else {
+                    msg = "Msg : " + json_result.getString("msg");
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                    //showDialog(title, msg);
+                }
+            } catch (JSONException e) {
+                msg = "JSON parsing Error";
+                Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                //showDialog("Error", msg);
+            }
+            GlobalVar.setFlag(true);
+        }
+    }
+
     // use own showDialog to check user can register
     public void showDialog(final String title, String msg){
         AlertDialog.Builder ad = new AlertDialog.Builder(getActivity());
@@ -507,5 +607,4 @@ public class BluetoothChatFragment extends Fragment {
         AlertDialog alertDialog = ad.create();
         alertDialog.show();
     }
-
 }

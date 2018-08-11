@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import com.example.jaeheekim.sign_up.GlobalVar;
 import com.example.jaeheekim.sign_up.R;
 
 public class BluetoothActivity extends AppCompatActivity {
