@@ -1,7 +1,6 @@
 package com.example.jaeheekim.sign_up;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,15 +45,16 @@ public class CombinedChartActivity extends AppCompatActivity
     int NO2[] = {34, 14, 42, 98, 260, 300, 112};
     int SO2[] = {8, 14, 60, 44, 120, 20, 225};
 
-    TextView locationView;
+    TextView location;
     private Spinner periodSpinner;
     private Spinner pollutantSpinner;
     List<String> listPeriod;
     List<String> listPollutant;
     ArrayAdapter<String> perSpinnerAdapter;
-    String period = "A week";
+    int period = 1;
     String pollutant = "All";
     ArrayAdapter<String> polluSpinnerAdapter;
+    private String id;
 
     int listSize;
 
@@ -71,6 +71,13 @@ public class CombinedChartActivity extends AppCompatActivity
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_combined_chart);
+
+        Intent intent = getIntent();
+        String name = intent.getStringExtra("name");
+        id = intent.getStringExtra("id");
+
+        location = (TextView) findViewById(R.id.location);
+        location.setText(name.split(" : ")[1].replace(" ","")+"'s Historical Chart");
 
         mChart = findViewById(R.id.chart1);
         mChart.getDescription().setEnabled(false);
@@ -109,9 +116,9 @@ public class CombinedChartActivity extends AppCompatActivity
         };
         perSpinnerAdapter.setDropDownViewResource(
                 android.R.layout.simple_spinner_dropdown_item);
+
         // Set Adapter in the spinner
         periodSpinner.setAdapter(perSpinnerAdapter);
-
 
         pollutantSpinner = (Spinner) findViewById(R.id.pollutant);
 
@@ -149,24 +156,41 @@ public class CombinedChartActivity extends AppCompatActivity
         // Set Adapter in the spinner
         pollutantSpinner.setAdapter(polluSpinnerAdapter);
 
-        periodSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        periodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                period = adapterView.getItemAtPosition(i).toString();
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            String temperiod = adapterView.getItemAtPosition(i).toString();
+            if(temperiod.equals("A day")){
+                period = 0;
+            } else if(temperiod.equals("A week")){
+                period = 1;
+            } else{
+                period = 2;
+            }
+        }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                period = 1;
             }
         });
 
-        pollutantSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        pollutantSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 pollutant = adapterView.getItemAtPosition(i).toString();
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                pollutant = "All";
+            }
         });
 
-        // draw bars behind lines
-        mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
-                CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE
-        });
+         mChart.invalidate();
+    }
+    public void onClickSubmit(View view) {
 
         Legend l = mChart.getLegend();
         l.setWordWrapEnabled(true);
@@ -194,6 +218,15 @@ public class CombinedChartActivity extends AppCompatActivity
                 return xValue.get((int) value % xValue.size());
             }
         });
+        if (GlobalVar.getFlag()) {
+            GlobalVar.setFlag(false);
+
+            String url = "http://teamf-iot.calit2.net/API/view";
+            String msg = "function=view_historical_air&token=" + GlobalVar.getToken()
+                    + "&id=" + id + "&type=" + period;
+            NetworkTaskListHistory networkTaskListHistory = new NetworkTaskListHistory(url, msg);
+            networkTaskListHistory.execute();
+        }
     }
 
     private LineData generateOnlyLineData() {
@@ -321,34 +354,10 @@ public class CombinedChartActivity extends AppCompatActivity
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
-    }
-
-    public void onClickSubmit(View view) {
-        CombinedData data = new CombinedData();
-
-        if(pollutant.equals("All")) {
-            data.setData(generateLineData());
-            data.setData(generateBarData());
-            mChart.getXAxis().setAxisMaximum(data.getXMax() + 0.25f);
-        } else
-            data.setData(generateOnlyLineData());
-
-        mChart.setData(data);
-        mChart.animateY(1000);
-        mChart.invalidate();
-
-        AQIArray.clear();
-        COArray.clear();
-        O3Array.clear();
-        NO2Array.clear();
-        SO2Array.clear();
-        xValue.clear();
     }
 
     // to communication with Server to check ID duplication
@@ -356,11 +365,13 @@ public class CombinedChartActivity extends AppCompatActivity
 
         private String url;                         // Server URL
         private String values;                      // data passing to Server from Android
+
         // constructor
         public NetworkTaskListHistory(String url, String values) {
             this.url = url;
             this.values = values;
         }
+
         // start from here
         @Override
         protected String doInBackground(Void... params) {
@@ -369,6 +380,7 @@ public class CombinedChartActivity extends AppCompatActivity
             result = requestHttpURLConnection.request(url, values); // get result from this "url"
             return result;
         }
+
         // start after done doInBackground, result will be s in this function
         @Override
         protected void onPostExecute(String s) {
@@ -381,6 +393,13 @@ public class CombinedChartActivity extends AppCompatActivity
                 JSONArray jsonArray = new JSONArray(s);
                 JSONObject info = jsonArray.getJSONObject(0);
 
+                AQIArray.clear();
+                COArray.clear();
+                NO2Array.clear();
+                SO2Array.clear();
+                O3Array.clear();
+                xValue.clear();
+
                 title = info.getString("status");
 
                 //title = json_result.getString("status");                // title will be value of s's "status"
@@ -389,27 +408,35 @@ public class CombinedChartActivity extends AppCompatActivity
                     listSize = info.getInt("size");
 
                     if (listSize == 0) {
-                        showDialog("Nothing", "It has noting yet",null);
+                        Toast.makeText(CombinedChartActivity.this, "Nothing, It has noting yet", Toast.LENGTH_SHORT).show();
                         GlobalVar.setFlag(true);
                         return;
                     } else
                         num++;
 
-                    for (; num <= listSize; num++) {
-                        JSONObject jsonAir = jsonArray.getJSONObject(num);
-/*
-                        boardMACList.add(jsonAir.getString("air_sensor_id"));
-                        boardNameList.add(jsonAir.getString("air_sensor_name"));
-                        LatLng latLng = new LatLng(Double.valueOf(jsonAir.getString("latitude")),
-                                Double.valueOf(jsonAir.getString("longitude")));
-                        locationArray.add(latLng);
-                        AQIArray.add(Integer.valueOf(jsonAir.getInt("AQI")));
-                        */
+                    JSONObject jsonAir;
 
+                    for (; num <= listSize; num++) {
+                        jsonAir = jsonArray.getJSONObject(num);
+
+                        float max;
+                        xValue.add(jsonAir.getString("collected_time"));
+                        COArray.add(jsonAir.getString("AQI_CO"));
+                        max = Float.valueOf(COArray.get(num-1));
+                        O3Array.add(jsonAir.getString("AQI_O3"));
+                        if (max < Float.valueOf(O3Array.get(num-1)))
+                            max = Float.valueOf(O3Array.get(num-1));
+                        NO2Array.add(jsonAir.getString("AQI_NO2"));
+                        if (max < Float.valueOf(NO2Array.get(num-1)))
+                            max = Float.valueOf(NO2Array.get(num-1));
+                        SO2Array.add(jsonAir.getString("AQI_SO2"));
+                        if (max < Float.valueOf(SO2Array.get(num-1)))
+                            max = Float.valueOf(SO2Array.get(num-1));
+                        AQIArray.add(String.valueOf(max));
                     }
-                    Toast.makeText(CombinedChartActivity.this, "all new set", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CombinedChartActivity.this, "all new setted", Toast.LENGTH_SHORT).show();
                 } else {
-                    msg = "Msg : "+ info.getString("msg");
+                    msg = "Msg : " + info.getString("msg");
                     Toast.makeText(CombinedChartActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             } catch (JSONException e) {
@@ -417,41 +444,25 @@ public class CombinedChartActivity extends AppCompatActivity
                 Toast.makeText(CombinedChartActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
             GlobalVar.setFlag(true);
-        }
-    }
 
-    private void showDialog(final String title, String Msg, final String deviceID){
-        AlertDialog.Builder ad = new AlertDialog.Builder(CombinedChartActivity.this);
-        ad.setTitle(title);
-        ad.setMessage(Msg);
-        if(title.equals("No Sensor")) {
-            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                    dialog.dismiss();
-                }
-            });
-        } else if (title.equals("Double Check")) {
-            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String url = "http://teamf-iot.calit2.net/API/sensor";
-                    String value = "function=deregister-air&token="+GlobalVar.getToken()+
-                            "&id="+deviceID;
-                    NetworkTaskListHistory networkTaskListDeregi = new NetworkTaskListHistory(url,value);
-                    networkTaskListDeregi.execute();
-                    dialog.dismiss();
-                }
-            });
-            ad.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-        }
-        ad.show();
-    }
+            CombinedData data = new CombinedData();
 
+            if(pollutant.equals("All")) {
+                mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
+                        CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE
+                });
+                data.setData(generateLineData());
+                data.setData(generateBarData());
+                mChart.getXAxis().setAxisMaximum(data.getXMax() + 0.25f);
+            } else {
+                data.setData(generateOnlyLineData());
+                data.setData(generateBarData());
+            }
+            mChart.setData(data);
+            mChart.animateY(1000);
+            mChart.invalidate();
+
+        }
+
+    }
 }

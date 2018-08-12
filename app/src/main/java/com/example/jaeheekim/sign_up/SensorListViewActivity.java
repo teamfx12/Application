@@ -143,8 +143,9 @@ public class SensorListViewActivity extends AppCompatActivity
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent toChart = new Intent(getApplicationContext(), CombinedChartActivity.class);
-                toChart.putExtra("ID", marker.getTitle());
+                Intent toChart = new Intent(SensorListViewActivity.this, CombinedChartActivity.class);
+                toChart.putExtra("id", marker.getSnippet());
+                toChart.putExtra("name", marker.getTitle());
                 startActivity(toChart);
             }
         });
@@ -152,8 +153,7 @@ public class SensorListViewActivity extends AppCompatActivity
         mMap.setOnInfoWindowLongClickListener(new GoogleMap.OnInfoWindowLongClickListener() {
             @Override
             public void onInfoWindowLongClick(Marker marker) {
-                String id = marker.getSnippet();
-                showDialog("Double Check", "Do you want to DEREGIST your sensor?",id);
+                showDialog("Double Check", "Do you want to DEREGIST your sensor?",marker.getSnippet());
             }
         });
     }

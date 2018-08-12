@@ -70,9 +70,6 @@ public class MainActivity extends AppCompatActivity
 
             LatLng myLocation = new LatLng(latitude,longitude);
             GlobalVar.setmLocation(myLocation);
-        } else {
-            // GPS 를 사용할수 없으므로
-            gps.showSettingsAlert();
         }
 
         ImageView heart = (ImageView) findViewById(R.id.gif_image);
@@ -182,58 +179,33 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onClickPolar(View view) {
-        if (polar) {
-            polar = false;
-            activatePolar();
-            new Thread() {
-                @Override
-                public void run() {
-                    while (true) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressBar.setProgress(GlobalVar.getHeartRate());
-                                bpm.setText(GlobalVar.getHeartRate() + " bpm");
-                                pnn.setText(GlobalVar.getPnnPercent() + " %");
-                                if (GlobalVar.getHeartRate() < 60) {
-                                    bpm.setTextColor(Color.DKGRAY);
-                                    pnn.setTextColor(Color.DKGRAY);
-                                } else if (GlobalVar.getHeartRate() < 80) {
-                                    bpm.setTextColor(Color.GREEN);
-                                    pnn.setTextColor(Color.GREEN);
-                                } else if (GlobalVar.getHeartRate() < 100) {
-                                    bpm.setTextColor(Color.BLUE);
-                                    pnn.setTextColor(Color.BLUE);
-                                } else {
-                                    bpm.setTextColor(Color.RED);
-                                    pnn.setTextColor(Color.RED);
-                                }
-
-                                if (GlobalVar.getFlag()) {
-                                    GlobalVar.setFlag(false);
-                                    String url = "http://teamf-iot.calit2.net/API/transfer";
-                                    try {
-                                        String value = makeJSONObject();
-                                        NetworkTaskPolar networkTaskPolar = new NetworkTaskPolar(url, value);
-                                        networkTaskPolar.execute();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        });
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(GlobalVar.getHeartRate());
+                            bpm.setText(GlobalVar.getHeartRate()+"bpm");
+                            if(GlobalVar.getHeartRate() < 60)
+                                bpm.setTextColor(Color.YELLOW);
+                            else if(GlobalVar.getHeartRate() < 80)
+                                bpm.setTextColor(Color.GREEN);
+                            else if(GlobalVar.getHeartRate() < 100)
+                                bpm.setTextColor(Color.BLUE);
+                            else
+                                bpm.setTextColor(Color.RED);
                         }
+                    });
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
-            }.start();
-        } else {
-            deactivatePolar();
-            polar = true;
-        }
+            }
+        }).start();
     }
 
     // to communication with Server to check ID duplication
@@ -426,9 +398,15 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         } else if (id == R.id.nav_slideshow) {
+            try {
+                if(GlobalVar.isTokenExpired()) {
+                    Intent toFinding = new Intent(getApplicationContext(), CurrentLocationActivity.class);
+                    startActivity(toFinding);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         } else if (id == R.id.nav_history) {
-            Intent toFinding = new Intent(getApplicationContext(), CombinedChartActivity.class);
-            startActivity(toFinding);
         } else if (id == R.id.nav_manage) {
             Intent toFinding = new Intent(getApplicationContext(), BluetoothActivity.class);
             startActivity(toFinding);

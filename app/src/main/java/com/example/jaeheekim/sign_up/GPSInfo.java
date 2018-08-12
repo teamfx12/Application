@@ -1,6 +1,5 @@
 package com.example.jaeheekim.sign_up;
 
-
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Service;
@@ -162,8 +161,8 @@ public class GPSInfo extends Service implements LocationListener {
     public void showSettingsAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
-        alertDialog.setTitle("GPS SETTING");
-        alertDialog.setMessage("GPS probably didn't turn on. \n Go to Settings?");
+        alertDialog.setTitle("GPS 사용유무셋팅");
+        alertDialog.setMessage("GPS 셋팅이 되지 않았을수도 있습니다. \n 설정창으로 가시겠습니까?");
 
         // OK 를 누르게 되면 설정창으로 이동합니다.
         alertDialog.setPositiveButton("Settings",

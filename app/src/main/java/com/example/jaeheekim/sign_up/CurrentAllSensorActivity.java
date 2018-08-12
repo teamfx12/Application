@@ -138,7 +138,8 @@ public class CurrentAllSensorActivity extends AppCompatActivity
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent toChart = new Intent(getApplicationContext(), CombinedChartActivity.class);
-                toChart.putExtra("ID", marker.getSnippet());
+                toChart.putExtra("id", marker.getSnippet());
+                toChart.putExtra("name", marker.getTitle());
                 startActivity(toChart);
             }
         });

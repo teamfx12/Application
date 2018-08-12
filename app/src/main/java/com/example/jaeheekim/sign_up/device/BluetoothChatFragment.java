@@ -304,7 +304,8 @@ public class BluetoothChatFragment extends Fragment {
                                     mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                                 }else {
                                     values = makeJSONArray(GlobalVar.getHistoricalData());
-                                    mConversationArrayAdapter.add(GlobalVar.getHistoricalData());
+                                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + GlobalVar.getHistoricalData());
+                                    historicalOn = false;
                                 }
                                 NetworkTaskTrans networkTaskTrans = new NetworkTaskTrans(url, values);
                                 networkTaskTrans.execute();
@@ -387,7 +388,7 @@ public class BluetoothChatFragment extends Fragment {
             resultArray.add(temp);
             GlobalVar.setRealTimeData(resultArray.toString());
         } else {
-            historicalOn = false;
+            //historicalOn = false;
             JSONArray historicalArray = new JSONArray(GlobalVar.getHistoricalData());
 
             JSONObject historical = new JSONObject();
